@@ -1,0 +1,31 @@
+{
+  "name": "birdwatching-simulator",
+  "version": "1.0.0",
+  "description": "Status: Concept / Pre-development\r Stack: Node.js, npm, MongoDB, RESTful API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edmullins/Birdwatching-Simulator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/edmullins/Birdwatching-Simulator/issues"
+  },
+  "homepage": "https://github.com/edmullins/Birdwatching-Simulator#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-mongo": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mongoose": "^9.9.4"
+  }
+}
