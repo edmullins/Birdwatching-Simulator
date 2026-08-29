@@ -1,7 +1,12 @@
 import express from 'express';
+import { register, login, logout, me } from '../controllers/authController.js';
+import { requireAuth } from '../middleware/requireAuth.js';
+
 const router = express.Router();
 
-// TODO: implement
-router.post('/login', (req, res) => res.status(501).json({ message: 'not implemented' }));
+router.post('/register', register);
+router.post('/login', login);
+router.post('/logout', logout);
+router.get('/me', requireAuth, me);
 
 export default router;
