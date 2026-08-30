@@ -1,0 +1,305 @@
+:root {
+    --paper: #e7e1cc;
+    /* aged field-guide page */
+    --card: #f1ecd9;
+    /* index card, slightly lighter than page */
+    --ink: #202a1f;
+    /* near-black pine ink */
+    --pine: #33503e;
+    /* primary — buttons, active states */
+    --pine-dark: #24382c;
+    /* hover/pressed */
+    --gold: #b9922e;
+    /* accent — specimen tag, focus */
+    --rule: #a69c7c;
+    /* faded khaki hairline */
+    --error: #8c3b2c;
+    /* muted brick red */
+    --radius: 2px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background-image: url(../assets/backgrounds/loginBG.jpg);
+    background-size: cover;
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+#app {
+    min-height: 100%;
+}
+
+.view[hidden] {
+    display: none;
+}
+
+.view {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------------------------------------------------------------
+   Auth (login/register)
+   ----------------------------------------------------------------*/
+.auth-page {
+    margin: auto;
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.auth-wordmark {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pine-dark);
+    margin: 0;
+    text-align: center;
+}
+
+.auth-card {
+    position: relative;
+    width: 100%;
+    background: var(--card);
+    padding: 40px 28px 28px;
+    /* torn-paper top edge */
+    clip-path: polygon(0% 0,
+            8.33% 10px,
+            16.67% 0,
+            25% 10px,
+            33.33% 0,
+            41.67% 10px,
+            50% 0,
+            58.33% 10px,
+            66.67% 0,
+            75% 10px,
+            83.33% 0,
+            91.67% 10px,
+            100% 0,
+            100% 100%,
+            0% 100%);
+    box-shadow: 0 18px 34px -22px rgba(32, 42, 31, 0.55);
+}
+
+.specimen-tag {
+    position: absolute;
+    top: 18px;
+    right: -8px;
+    transform: rotate(-4deg);
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    box-shadow: 0 4px 10px -4px rgba(32, 42, 31, 0.5);
+    white-space: nowrap;
+}
+
+.auth-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 20px;
+}
+
+.auth-tab {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 8px 4px 10px;
+    margin-right: 20px;
+    font: inherit;
+    font-weight: 500;
+    color: rgba(32, 42, 31, 0.55);
+    cursor: pointer;
+    position: relative;
+}
+
+.auth-tab.is-active {
+    color: var(--ink);
+}
+
+.auth-tab.is-active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--pine);
+}
+
+.auth-tab:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(32, 42, 31, 0.6);
+}
+
+.field input {
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 2px;
+    width: 100%;
+}
+
+.field input:focus-visible {
+    outline: none;
+    border-bottom-color: var(--gold);
+    box-shadow: 0 1px 0 0 var(--gold);
+}
+
+.auth-error {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--error);
+    background: rgba(140, 59, 44, 0.08);
+    border-left: 3px solid var(--error);
+    padding: 8px 10px;
+}
+
+/* ---------------------------------------------------------------
+   Buttons
+   ----------------------------------------------------------------*/
+.btn {
+    font: inherit;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 12px 16px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--pine);
+    color: var(--card);
+}
+
+.btn-primary:hover {
+    background: var(--pine-dark);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--pine-dark);
+    border-color: var(--rule);
+}
+
+.btn-ghost:hover {
+    border-color: var(--pine);
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .btn {
+        transition: background-color 150ms ease, border-color 150ms ease;
+    }
+}
+
+/* ---------------------------------------------------------------
+   Main menu - placeholder only. Full level-select + leaderboard
+   layout is a separate build (Milestone 2). This just gives the
+   router somewhere real to land after login/register.
+   ----------------------------------------------------------------*/
+[data-view='mainMenu'] {
+    flex-direction: column;
+}
+
+.menu-topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 28px;
+}
+
+.menu-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(32, 42, 31, 0.6);
+}
+
+.menu-placeholder {
+    margin: auto;
+    max-width: 480px;
+    padding: 24px;
+    text-align: center;
+}
+
+.menu-placeholder h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin: 0 0 8px;
+}
+
+.menu-placeholder p {
+    color: rgba(32, 42, 31, 0.7);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ---------------------------------------------------------------
+   Small screens
+   ----------------------------------------------------------------*/
+@media (max-width: 420px) {
+    .auth-wordmark {
+        font-size: 0.9rem;
+    }
+
+    .auth-card {
+        padding: 34px 20px 22px;
+    }
+}

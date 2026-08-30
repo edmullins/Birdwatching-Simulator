@@ -72,6 +72,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
   return {
     id: this._id,
     username: this.username,
+    //#TODO: consider not using email at all. just username and password for login
     email: this.email,
     coins: this.coins,
     unlockedBinoculars: this.unlockedBinoculars,
