@@ -1,31 +1,112 @@
 import { showView } from '../router.js';
 import { api } from '../api.js';
 
-// Placeholder only — level select + leaderboard are a separate build
-// (Milestone 2). This exists so login/register has somewhere real to
-// navigate to, and so logout is testable now rather than later.
 export function mountMainMenu(container, params) {
   const username = params?.user?.username ?? 'birder';
 
+  const leaderboardRows = Array.from({ length: 25 }, (_, index) => {
+    const level = 8 + index * 2;
+    return `
+      <li>
+        <span class="rank">#${index + 1}</span>
+        <strong>Level ${level}</strong>
+      </li>
+    `;
+  }).join('');
+
   container.innerHTML = `
     <header class="menu-topbar">
-      <span class="menu-eyebrow">Field log</span>
-      <button type="button" class="btn btn-ghost" data-action="logout">Log out</button>
+      <div class="menu-brand">
+        <span class="menu-eyebrow">Birdwatching Simulator</span>
+        <h1>Field Log</h1>
+      </div>
+
+      <button type="button" class="btn btn-ghost" data-action="logout">
+        Log out
+      </button>
     </header>
-    <div class="menu-placeholder">
-      <h1>Welcome back, ${escapeHtml(username)}.</h1>
-      <p>Level select and leaderboard load here next.</p>
-    </div>
+
+    <main class="menu-shell">
+      <section class="menu-panel menu-panel--primary">
+        <p class="menu-kicker">Welcome back</p>
+        <h2>${escapeHtml(username)}</h2>
+        <p class="menu-summary">
+          The woods are active this morning.
+        </p>
+
+        <div class="menu-actions">
+          <!-- TODO: Implement carousel style level selection and action buttons -->
+        </div>
+      </section>
+
+      <aside class="menu-panel menu-panel--stats">
+        <div class="panel-header">
+          <span class="panel-label">Season stats</span>
+        </div>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <span class="stat-label">Runs</span>
+            <strong>12</strong>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-label">Best score</span>
+            <strong>2,450</strong>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-label">Species ID</span>
+            <strong>19</strong>
+          </article>
+        </div>
+
+        <div class="mini-panel">
+          <span class="panel-label">Recent sightings</span>
+          <ul class="species-list">
+            <li><span>Great Blue Heron</span><em>+120</em></li>
+            <li><span>Red-winged Blackbird</span><em>+96</em></li>
+            <li><span>Wood Duck</span><em>+82</em></li>
+          </ul>
+        </div>
+
+        <div class="mini-panel leaderboard-panel">
+          <div class="leaderboard-header">
+            <span class="panel-label">Top levels reached</span>
+            <span class="leaderboard-badge">Top 25</span>
+          </div>
+
+          <ol class="leaderboard-list">
+            ${leaderboardRows}
+          </ol>
+        </div>
+      </aside>
+    </main>
   `;
 
-  container.querySelector('[data-action="logout"]').addEventListener('click', async () => {
-    try {
-      await api.logout();
-    } catch (err) {
-      console.error('Logout failed:', err);
-    } finally {
-      showView('login');
-    }
+  const logoutButton = container.querySelector('[data-action="logout"]');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async () => {
+      try {
+        await api.logout();
+      } catch (err) {
+        console.error('Logout failed:', err);
+      } finally {
+        showView('login');
+      }
+    });
+  }
+
+  const actionButtons = container.querySelectorAll('[data-action]');
+  actionButtons.forEach((button) => {
+    const action = button.dataset.action;
+
+    if (action === 'logout') return;
+
+    button.addEventListener('click', () => {
+      console.log(`Menu action: ${action}`);
+      // Hook these up later to level select / leaderboard / run startup.
+    });
   });
 }
 

@@ -245,52 +245,6 @@ body {
         transition: background-color 150ms ease, border-color 150ms ease;
     }
 }
-
-/* ---------------------------------------------------------------
-   Main menu - placeholder only. Full level-select + leaderboard
-   layout is a separate build (Milestone 2). This just gives the
-   router somewhere real to land after login/register.
-   ----------------------------------------------------------------*/
-[data-view='mainMenu'] {
-    flex-direction: column;
-}
-
-.menu-topbar {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 28px;
-}
-
-.menu-eyebrow {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(32, 42, 31, 0.6);
-}
-
-.menu-placeholder {
-    margin: auto;
-    max-width: 480px;
-    padding: 24px;
-    text-align: center;
-}
-
-.menu-placeholder h1 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 600;
-    font-size: 1.6rem;
-    margin: 0 0 8px;
-}
-
-.menu-placeholder p {
-    color: rgba(32, 42, 31, 0.7);
-    line-height: 1.5;
-    margin: 0;
-}
-
 /* ---------------------------------------------------------------
    Small screens
    ----------------------------------------------------------------*/
