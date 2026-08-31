@@ -20,6 +20,9 @@ function validateRegisterInput({ username, email, password }) {
   if (typeof password !== 'string' || password.length < PASSWORD_MIN) {
     errors.push(`password must be at least ${PASSWORD_MIN} characters`);
   }
+  if (confirmPassword !== undefined && password !== confirmPassword) {
+    errors.push('passwords must match');
+  }
 
   return errors;
 }

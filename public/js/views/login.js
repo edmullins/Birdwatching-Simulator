@@ -64,6 +64,19 @@ function render(container) {
             />
           </label>
 
+          ${
+            mode === 'register'
+              ? `<span class="field-label">Confirm Password</span>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    autocomplete="${mode === 'login' ? 'current-password' : 'new-password'}"
+                    required
+                    minlength="8"
+                  />`
+              : ''
+          }
+
           <p class="auth-error" role="alert" aria-live="polite" hidden></p>
 
           <button type="submit" class="btn btn-primary">
