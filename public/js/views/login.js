@@ -44,15 +44,6 @@ function render(container) {
             />
           </label>
 
-          ${
-            mode === 'register'
-              ? `<label class="field">
-                  <span class="field-label">Email</span>
-                  <input type="email" name="email" autocomplete="email" required />
-                </label>`
-              : ''
-          }
-
           <label class="field">
             <span class="field-label">Password</span>
             <input
@@ -66,14 +57,15 @@ function render(container) {
 
           ${
             mode === 'register'
-              ? `<span class="field-label">Confirm Password</span>
+              ? `<label class="field"><span class="field-label">Confirm Password</span>
                   <input
                     type="password"
                     name="confirmPassword"
                     autocomplete="${mode === 'login' ? 'current-password' : 'new-password'}"
                     required
                     minlength="8"
-                  />`
+                  />
+                </label>`
               : ''
           }
 
@@ -108,7 +100,7 @@ function wireEvents(container) {
     const formData = new FormData(form);
     const username = (formData.get('username') || '').toString().trim();
     const password = (formData.get('password') || '').toString();
-    const email = (formData.get('email') || '').toString().trim();
+    const confirmPassword = (formData.get('confirmPassword') || '').toString();
 
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
@@ -117,7 +109,7 @@ function wireEvents(container) {
       const { user } =
         mode === 'login'
           ? await api.login(username, password)
-          : await api.register(username, email, password);
+          : await api.register(username, password, confirmPassword);
       showView('mainMenu', { user });
     } catch (err) {
       showError(errorEl, formatError(err));

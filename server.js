@@ -1,6 +1,4 @@
 import 'dotenv/config';
-console.log('MONGODB_URI:', process.env.MONGODB_URI); // remove after debugging
-
 import app from './src/app.js';
 import { connectDB } from './src/config/db.js';
 

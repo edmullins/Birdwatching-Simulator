@@ -3,19 +3,15 @@ import User from '../models/user.js';
 const USERNAME_MIN = 3;
 const USERNAME_MAX = 20;
 const PASSWORD_MIN = 8;
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Shared validation for register - login only needs presence checks,
 // since a malformed-but-nonempty username/password on login just means
 // "no such user," which login already handles via the generic 401.
-function validateRegisterInput({ username, email, password }) {
+function validateRegisterInput({ username, password, confirmPassword }) {
   const errors = [];
 
   if (typeof username !== 'string' || username.trim().length < USERNAME_MIN || username.trim().length > USERNAME_MAX) {
     errors.push(`username must be ${USERNAME_MIN}-${USERNAME_MAX} characters`);
-  }
-  if (typeof email !== 'string' || !EMAIL_RE.test(email.trim())) {
-    errors.push('email must be a valid email address');
   }
   if (typeof password !== 'string' || password.length < PASSWORD_MIN) {
     errors.push(`password must be at least ${PASSWORD_MIN} characters`);
@@ -28,9 +24,8 @@ function validateRegisterInput({ username, email, password }) {
 }
 
 export async function register(req, res) {
-  const { username, email, password } = req.body ?? {};
-
-  const errors = validateRegisterInput({ username, email, password });
+  const { username, password, confirmPassword } = req.body ?? {};
+  const errors = validateRegisterInput({ username, password, confirmPassword });
   if (errors.length > 0) {
     return res.status(400).json({ error: 'Invalid input', details: errors });
   }
@@ -39,7 +34,6 @@ export async function register(req, res) {
     const passwordHash = await User.hashPassword(password);
     const user = await User.create({
       username: username.trim(),
-      email: email.trim().toLowerCase(),
       passwordHash,
     });
 
@@ -54,10 +48,9 @@ export async function register(req, res) {
       res.status(201).json({ user: user.toSafeJSON() });
     });
   } catch (err) {
-    // Mongo duplicate-key error - username or email already taken.
+    // Mongo duplicate-key error - username already taken.
     if (err.code === 11000) {
-      const field = Object.keys(err.keyPattern ?? {})[0] ?? 'username or email';
-      return res.status(409).json({ error: `${field} already in use` });
+      return res.status(409).json({ error: `Username already in use` });
     }
     console.error('Register failed:', err);
     res.status(500).json({ error: 'Failed to register' });

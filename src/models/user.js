@@ -13,14 +13,6 @@ const userSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 20,
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      lowercase: true,
-      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email format'],
-    },
     passwordHash: {
       type: String,
       required: true,
@@ -72,8 +64,6 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
   return {
     id: this._id,
     username: this.username,
-    //#TODO: consider not using email at all. just username and password for login
-    email: this.email,
     coins: this.coins,
     unlockedBinoculars: this.unlockedBinoculars,
     stats: { maxLevelReached: this.stats.maxLevelReached },
