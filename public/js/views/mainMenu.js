@@ -1,8 +1,11 @@
+// public/js/views/mainMenu.js
 import { showView } from '../router.js';
 import { api } from '../api.js';
+import { mountLevelSelect } from '../components/levelSelect.js';
 
 export function mountMainMenu(container, params) {
   const username = params?.user?.username ?? 'birder';
+  const maxLevelReached = params?.user?.stats?.maxLevelReached ?? 0;
 
   const leaderboardRows = Array.from({ length: 25 }, (_, index) => {
     const level = 8 + index * 2;
@@ -31,11 +34,11 @@ export function mountMainMenu(container, params) {
         <p class="menu-kicker">Welcome back</p>
         <h2>${escapeHtml(username)}</h2>
         <p class="menu-summary">
-          The woods are active this morning.
+          The woods are active this morning. Current level: ${maxLevelReached}
         </p>
 
-        <div class="menu-actions">
-          <!-- TODO: Implement carousel style level selection and action buttons -->
+        <div class="menu-actions" id="level-select-container">
+          <!-- Level carousel will be mounted here -->
         </div>
       </section>
 
@@ -84,6 +87,13 @@ export function mountMainMenu(container, params) {
     </main>
   `;
 
+  // Mount level select component
+  const levelSelectContainer = container.querySelector('#level-select-container');
+  if (levelSelectContainer) {
+    mountLevelSelect(levelSelectContainer, params?.user);
+  }
+
+  // Handle logout
   const logoutButton = container.querySelector('[data-action="logout"]');
   if (logoutButton) {
     logoutButton.addEventListener('click', async () => {
@@ -96,18 +106,6 @@ export function mountMainMenu(container, params) {
       }
     });
   }
-
-  const actionButtons = container.querySelectorAll('[data-action]');
-  actionButtons.forEach((button) => {
-    const action = button.dataset.action;
-
-    if (action === 'logout') return;
-
-    button.addEventListener('click', () => {
-      console.log(`Menu action: ${action}`);
-      // Hook these up later to level select / leaderboard / run startup.
-    });
-  });
 }
 
 function escapeHtml(str) {

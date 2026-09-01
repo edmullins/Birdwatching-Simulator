@@ -7,10 +7,12 @@ const BASE = '/api';
  * without re-parsing responses themselves.
  */
 async function request(path, { method = 'GET', body } = {}) {
+  // inside request()
   const res = await fetch(BASE + path, {
     method,
     headers: { 'Content-Type': 'application/json' },
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    credentials: 'include'   // <--- ensure cookies are sent for session auth
   });
 
   let data = null;
@@ -40,4 +42,8 @@ export const api = {
   logout: () => request('/auth/logout', { method: 'POST' }),
 
   me: () => request('/auth/me'),
+
+  createRun: (levelNumber) =>
+    request('/runs', { method: 'POST', body: { levelNumber } }),
+
 };

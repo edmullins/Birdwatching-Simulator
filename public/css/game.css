@@ -1,0 +1,35 @@
+.level-placeholder {
+  margin: auto;
+  max-width: 520px;
+  padding: 32px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: rgba(241, 236, 217, 0.88);
+  border: 1px solid rgba(166, 156, 124, 0.9);
+  box-shadow: 0 18px 34px -22px rgba(32, 42, 31, 0.55);
+}
+
+.level-placeholder h1 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 2.2rem;
+  color: var(--ink);
+}
+
+.level-placeholder p {
+  margin: 0;
+  color: rgba(32, 42, 31, 0.75);
+  line-height: 1.5;
+}
+
+.success-message {
+  color: var(--pine) !important;
+  font-weight: 600;
+  background: rgba(51, 80, 62, 0.08);
+  border-left: 3px solid var(--pine);
+  padding: 8px 10px;
+  width: 100%;
+}

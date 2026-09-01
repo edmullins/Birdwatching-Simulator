@@ -26,6 +26,8 @@ html,
 body {
     height: 100%;
     margin: 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(51, 80, 62, 0.45) transparent;
 }
 
 body {
