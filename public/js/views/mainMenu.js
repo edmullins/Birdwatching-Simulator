@@ -2,20 +2,12 @@
 import { showView } from '../router.js';
 import { api } from '../api.js';
 import { mountLevelSelect } from '../components/levelSelect.js';
+import { mountLeaderboard } from '../components/leaderboard.js';
 
 export function mountMainMenu(container, params) {
   const username = params?.user?.username ?? 'birder';
   const maxLevelReached = params?.user?.stats?.maxLevelReached ?? 0;
 
-  const leaderboardRows = Array.from({ length: 25 }, (_, index) => {
-    const level = 8 + index * 2;
-    return `
-      <li>
-        <span class="rank">#${index + 1}</span>
-        <strong>Level ${level}</strong>
-      </li>
-    `;
-  }).join('');
 
   container.innerHTML = `
     <header class="menu-topbar">
@@ -76,12 +68,10 @@ export function mountMainMenu(container, params) {
         <div class="mini-panel leaderboard-panel">
           <div class="leaderboard-header">
             <span class="panel-label">Top levels reached</span>
-            <span class="leaderboard-badge">Top 25</span>
+            <span class="leaderboard-badge">Live</span>
           </div>
 
-          <ol class="leaderboard-list">
-            ${leaderboardRows}
-          </ol>
+          <div class="leaderboard-container" data-leaderboard></div>
         </div>
       </aside>
     </main>
@@ -91,6 +81,13 @@ export function mountMainMenu(container, params) {
   const levelSelectContainer = container.querySelector('#level-select-container');
   if (levelSelectContainer) {
     mountLevelSelect(levelSelectContainer, params?.user);
+  }
+
+  // Mount leaderboard — fetches real data and renders async; loading/
+  // empty/error states are handled inside mountLeaderboard itself.
+  const leaderboardContainer = container.querySelector('[data-leaderboard]');
+  if (leaderboardContainer) {
+    mountLeaderboard(leaderboardContainer, { currentUsername: username });
   }
 
   // Handle logout

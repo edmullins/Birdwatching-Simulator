@@ -396,3 +396,37 @@
     grid-template-columns: 1fr;
   }
 }
+/* ---------------------------------------------------------------
+   Leaderboard — loading/empty/error states + current-player row
+   (issue #7: real data replaces the placeholder rows)
+   ----------------------------------------------------------------*/
+.leaderboard-loading,
+.leaderboard-empty,
+.leaderboard-error {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 0.85rem;
+  color: rgba(32, 42, 31, 0.6);
+}
+
+.leaderboard-error {
+  color: var(--error);
+}
+
+.leaderboard-list li.is-you {
+  background: rgba(185, 146, 46, 0.12);
+  border-left: 2px solid var(--gold);
+  padding-left: 8px;
+  margin-left: -10px;
+}
+
+.leaderboard-list li.is-you strong {
+  color: var(--pine-dark);
+}
+
+.leaderboard-you-divider {
+  border: none;
+  border-top: 1px dashed rgba(166, 156, 124, 0.9);
+  margin: 4px 0;
+  padding: 0;
+}

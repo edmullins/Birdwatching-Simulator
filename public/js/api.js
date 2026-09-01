@@ -46,4 +46,5 @@ export const api = {
   createRun: (levelNumber) =>
     request('/runs', { method: 'POST', body: { levelNumber } }),
 
+  getLeaderboard: (limit) => request(`/leaderboard${limit ? `?limit=${limit}` : ''}`),
 };
