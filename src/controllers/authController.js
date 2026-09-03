@@ -102,6 +102,7 @@ export function logout(req, res) {
 
 export async function me(req, res) {
   try {
+    // Pulls the latest user data
     const user = await User.findById(req.session.userId);
 
     // Edge case: session references a user that no longer exists

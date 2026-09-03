@@ -5,8 +5,10 @@ import { mountLevelSelect } from '../components/levelSelect.js';
 import { mountLeaderboard } from '../components/leaderboard.js';
 
 export function mountMainMenu(container, params) {
-  const username = params?.user?.username ?? 'birder';
-  const maxLevelReached = params?.user?.stats?.maxLevelReached ?? 0;
+  const user = params?.user;
+  const username = user?.username ?? 'birder';
+  const maxLevelReached = user?.stats?.maxLevelReached ?? 0;
+  console.log('mountMainMenu called with params:', params, 'username:', username, 'maxLevelReached:', maxLevelReached);
 
 
   container.innerHTML = `
@@ -80,7 +82,7 @@ export function mountMainMenu(container, params) {
   // Mount level select component
   const levelSelectContainer = container.querySelector('#level-select-container');
   if (levelSelectContainer) {
-    mountLevelSelect(levelSelectContainer, params?.user);
+    mountLevelSelect(levelSelectContainer, user);
   }
 
   // Mount leaderboard — fetches real data and renders async; loading/
