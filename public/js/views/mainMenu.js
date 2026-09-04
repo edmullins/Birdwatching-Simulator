@@ -28,7 +28,7 @@ export function mountMainMenu(container, params) {
         <p class="menu-kicker">Welcome back</p>
         <h2>${escapeHtml(username)}</h2>
         <p class="menu-summary">
-          The woods are active this morning. Current level: ${maxLevelReached}
+          The woods are active this morning.
         </p>
 
         <div class="menu-actions" id="level-select-container">

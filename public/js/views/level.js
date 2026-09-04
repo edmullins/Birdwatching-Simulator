@@ -2,20 +2,27 @@ import { api } from '../api.js';
 import { showView } from '../router.js';
 
 export function mountLevel(container, params = {}) {
-  const { run, user, levelNumber } = params ?? {};
+  const { run, user, levelNumber, levelConfig } = params ?? {};
   const level = Number(levelNumber ?? '?');
   const runId = run?._id;
   console.log('mountLevel called with params:', params, 'runId:', runId);
 
   container.innerHTML = `
+  <div class="level-scene" data-level-scene>
     <div class="level-placeholder">
-      <span class="menu-eyebrow">Run started</span>
-      <h1>Success!</h1>
-      <p>Level ${escapeHtml(level)} was created successfully.</p>
-      <p>Run ID: ${escapeHtml(run?._id ?? run?.id ?? 'unknown')}</p>
-      <p class="success-message">
-        The POST /api/runs endpoint is working and accepted the request.
-      </p>
+      <section class="level-config" aria-label="Level configuration">
+        <h2>Difficulty Configuration</h2>
+        <p>Minimum birds: ${escapeHtml(levelConfig?.minBirdsRequired ?? ' unavailable')}</p>
+        <p>Bird density: ${escapeHtml(levelConfig?.birdDensity ?? ' unavailable')}</p>
+        <p>
+          Distance range:
+          ${escapeHtml(levelConfig?.birdDistanceRange?.min ?? ' unavailable')}
+          -
+          ${escapeHtml(levelConfig?.birdDistanceRange?.max ?? ' unavailable')}
+        </p>
+        <p>Flee enabled: ${levelConfig?.fleeEnabled ? 'Yes' : 'No'}</p>
+        <p>Background: ${escapeHtml(levelConfig?.backgroundAsset ?? ' unavailable')}</p>
+      </section>
       <button type="button" class="btn btn-ghost" data-action="complete">
         Complete Level
       </button>
@@ -23,7 +30,14 @@ export function mountLevel(container, params = {}) {
         Back to menu
       </button>
     </div>
+  </div>
   `;
+
+  const scene = container.querySelector('[data-level-scene]');
+
+  if (scene && levelConfig?.backgroundAsset) {
+    scene.style.backgroundImage = `url("${levelConfig.backgroundAsset}")`;
+  }
 
   const completeButton = container.querySelector('[data-action="complete"]');
   const backButton = container.querySelector('[data-action="back"]');

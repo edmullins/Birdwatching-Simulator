@@ -1,6 +1,6 @@
 import Run from '../models/run.js';
 import User from '../models/user.js';
-import Level from '../models/level.js';
+import { getLevelConfig } from '../services/difficultyEngine.js';
 
 // Create a new run for the authenticated user
 export async function createRun(req, res) {
@@ -18,8 +18,7 @@ export async function createRun(req, res) {
       return res.status(403).json({ message: 'Level not unlocked yet' });
     }
 
-    const levelConfig = await Level.findOne({ levelNumber }) || null;
-
+    const levelConfig = getLevelConfig(levelNumber);
     const run = await Run.create({
       userId: user._id,
       levelReached: levelNumber,
