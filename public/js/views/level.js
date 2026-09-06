@@ -1,5 +1,7 @@
 import { api } from '../api.js';
 import { showView } from '../router.js';
+import { mountScene } from '../game/renderer.js';   // add this line
+
 
 export function mountLevel(container, params = {}) {
   const { run, user, levelNumber, levelConfig } = params ?? {};
@@ -33,11 +35,14 @@ export function mountLevel(container, params = {}) {
   </div>
   `;
 
-  const scene = container.querySelector('[data-level-scene]');
-
-  if (scene && levelConfig?.backgroundAsset) {
-    scene.style.backgroundImage = `url("${levelConfig.backgroundAsset}")`;
-  }
+  const sceneHost = document.createElement('div');
+  container.querySelector('[data-level-scene]').prepend(sceneHost);
+  mountScene(sceneHost, {
+    imageUrl: run.backgroundAsset ?? '/assets/backgrounds/bg1.jpg',
+    occlusionLayers: [
+      { imageUrl: '/assets/occlusion/bush1.png', zIndex: 1, x: 70, y: 75, width: 50, height: 50 }
+    ]
+  });
 
   const completeButton = container.querySelector('[data-action="complete"]');
   const backButton = container.querySelector('[data-action="back"]');

@@ -8,6 +8,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  position: relative;
 }
 
 .level-placeholder {
@@ -44,4 +45,62 @@
   border-left: 3px solid var(--pine);
   padding: 8px 10px;
   width: 100%;
+}
+
+/* ---------------------------------------------------------------
+   Scene renderer (game/renderer.js — #11)
+   The element passed into renderScene(container, background) gets
+   .scene-root applied to it; give it real dimensions from whatever
+   wraps it (level.js / #14) — it fills 100% of its parent here.
+   ----------------------------------------------------------------*/
+.scene-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.level-scene {
+  position: relative;
+}
+
+.level-scene > .scene-root {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.level-placeholder {
+  position: relative;
+  z-index: 1;
+}
+
+.scene-occlusion-layer {
+  background-size: contain;
+}
+
+/* Occlusion + bird layers never intercept clicks themselves — only the
+   bird sprites birdSpawner.js (#12) appends inside a bird layer should
+   be clickable, so it sets pointer-events back to 'auto' per sprite. */
+.scene-occlusion-layer,
+.scene-bird-layer {
+  pointer-events: none;
+}
+
+.scene-bird-layer>* {
+  pointer-events: auto;
 }
