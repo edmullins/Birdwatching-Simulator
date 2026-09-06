@@ -1,9 +1,12 @@
 import { api } from '../api.js';
 import { showView } from '../router.js';
-import { mountScene } from '../game/renderer.js';   // add this line
+import { mountScene } from '../game/renderer.js';
+import {
+  createBirdSpawner,
+  DEV_FIXTURE_BIRD_POOL
+} from '../game/birdSpawner.js';
 
-
-export function mountLevel(container, params = {}) {
+export async function mountLevel(container, params = {}) {
   const { run, user, levelNumber, levelConfig } = params ?? {};
   const level = Number(levelNumber ?? '?');
   const runId = run?._id;
@@ -37,12 +40,25 @@ export function mountLevel(container, params = {}) {
 
   const sceneHost = document.createElement('div');
   container.querySelector('[data-level-scene]').prepend(sceneHost);
-  mountScene(sceneHost, {
-    imageUrl: run.backgroundAsset ?? '/assets/backgrounds/bg1.jpg',
-    occlusionLayers: [
-      { imageUrl: '/assets/occlusion/tree.png', zIndex: 1, x: 40, y: 10, width: 75, height: 150 }
-    ]
-  });
+
+  try {
+    const scene = await mountScene(sceneHost, {
+      imageUrl: levelConfig?.backgroundAsset ?? '/assets/backgrounds/bg1.jpg',
+      occlusionLayers: [
+        { imageUrl: '/assets/occlusion/tree.png', zIndex: 1, x: 40, y: 10, width: 75, height: 150 }
+      ]
+    });
+
+    const spawner = createBirdSpawner({
+      scene,
+      levelConfig,
+      birdPool: DEV_FIXTURE_BIRD_POOL
+    });
+
+    spawner.start();
+  } catch (error) {
+    console.error('Failed to start level scene:', error);
+  }
 
   const completeButton = container.querySelector('[data-action="complete"]');
   const backButton = container.querySelector('[data-action="back"]');

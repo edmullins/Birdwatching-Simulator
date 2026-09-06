@@ -78,7 +78,7 @@
   position: relative;
 }
 
-.level-scene > .scene-root {
+.level-scene>.scene-root {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -103,4 +103,90 @@
 
 .scene-bird-layer>* {
   pointer-events: auto;
+}
+
+/* ---------------------------------------------------------------
+   Bird sprites (game/birdSpawner.js — #12)
+   Each sprite is a direct child of a .scene-bird-layer, positioned by
+   its center point (left/top = spawn point, translate(-50%,-50%) to
+   center on it) and scaled via the --bird-scale custom property, which
+   birdSpawner.js sets per-bird from levelConfig.birdDistanceRange.
+   ----------------------------------------------------------------*/
+.bird-sprite {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  transform: translate(-50%, -50%) scale(var(--bird-scale, 1));
+  transform-origin: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Hitbox slightly larger than the visual sprite (design doc §3) — the
+     padding grows the clickable area without growing what's drawn. */
+  padding: 10px;
+  box-sizing: content-box;
+}
+
+.bird-sprite.is-spawning,
+.bird-sprite.is-visible {
+  opacity: 1;
+}
+
+.bird-sprite.is-spawning,
+.bird-sprite.is-reappearing {
+  animation: bird-arrive 500ms ease-out forwards;
+}
+
+@keyframes bird-arrive {
+  from {
+    opacity: 0;
+    transform:
+      translate(calc(-50% - 120px), calc(-50% + 60px)) scale(var(--bird-scale, 1));
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%) scale(var(--bird-scale, 1));
+  }
+}
+
+.bird-sprite.is-fleeing {
+  opacity: 1;
+  animation: bird-leave 500ms ease-in forwards;
+}
+
+@keyframes bird-leave {
+  from {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%) scale(var(--bird-scale, 1));
+  }
+
+  to {
+    opacity: 0;
+    transform:
+      translate(calc(-50% + 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
+  }
+}
+
+.bird-sprite.is-hidden {
+  opacity: 0;
+}
+
+.bird-sprite.is-hidden {
+  opacity: 0;
+  cursor: default;
+}
+
+.bird-frame {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  /* clicks land on .bird-sprite, not the <img> itself */
+  user-select: none;
 }
