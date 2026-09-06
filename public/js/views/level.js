@@ -40,7 +40,7 @@ export function mountLevel(container, params = {}) {
   mountScene(sceneHost, {
     imageUrl: run.backgroundAsset ?? '/assets/backgrounds/bg1.jpg',
     occlusionLayers: [
-      { imageUrl: '/assets/occlusion/bush1.png', zIndex: 1, x: 70, y: 75, width: 50, height: 50 }
+      { imageUrl: '/assets/occlusion/tree.png', zIndex: 1, x: 40, y: 10, width: 75, height: 150 }
     ]
   });
 
