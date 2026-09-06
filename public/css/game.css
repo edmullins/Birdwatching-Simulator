@@ -137,14 +137,14 @@
 
 .bird-sprite.is-spawning,
 .bird-sprite.is-reappearing {
-  animation: bird-arrive 500ms ease-out forwards;
+  animation: bird-arrive 1000ms ease-out forwards;
 }
 
 @keyframes bird-arrive {
   from {
     opacity: 0;
     transform:
-      translate(calc(-50% - 120px), calc(-50% + 60px)) scale(var(--bird-scale, 1));
+      translate(calc(-50% + 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
   }
 
   to {
@@ -169,7 +169,7 @@
   to {
     opacity: 0;
     transform:
-      translate(calc(-50% + 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
+      translate(calc(-50% - 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
   }
 }
 

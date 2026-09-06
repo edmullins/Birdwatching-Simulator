@@ -7,6 +7,11 @@ import {
 } from '../game/birdSpawner.js';
 
 export async function mountLevel(container, params = {}) {
+  container.hidden = true;
+  container.innerHTML = `
+    <div class="level-loading">Loading level...</div>
+  `;
+
   const { run, user, levelNumber, levelConfig } = params ?? {};
   const level = Number(levelNumber ?? '?');
   const runId = run?._id;
@@ -56,8 +61,13 @@ export async function mountLevel(container, params = {}) {
     });
 
     spawner.start();
+    container.hidden = false;
   } catch (error) {
     console.error('Failed to start level scene:', error);
+    container.innerHTML = `
+    <div class="level-loading">Failed to load level.</div>
+  `;
+    container.hidden = false;
   }
 
   const completeButton = container.querySelector('[data-action="complete"]');

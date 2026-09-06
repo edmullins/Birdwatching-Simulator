@@ -49,7 +49,7 @@ const DEFAULT_RARITY_WEIGHTS = {
 // Timing constants (ms) — reasonable defaults to tune once this is
 // actually being played rather than guessed at.
 const SPAWN_FADE_MS = 450;
-const FRAME_INTERVAL_MS = 220;
+const FRAME_INTERVAL_MS = 100;
 const FLEE_ANIMATION_MS = 500;
 const HIDDEN_MIN_MS = 400;
 const HIDDEN_MAX_MS = 1200;
@@ -166,7 +166,7 @@ export function createBirdSpawner({
 
     const img = document.createElement('img');
     img.className = 'bird-frame';
-    img.src = restFrame(def);
+    img.src = def.frames[1] ?? restFrame(def);
     img.draggable = false;
     img.alt = def.name ?? 'bird';
     el.appendChild(img);
@@ -204,18 +204,19 @@ export function createBirdSpawner({
     }
     function startFrameCycle() {
       const flaps = flapFrames(def);
+
       if (flaps.length <= 1) {
         img.src = flaps[0];
         return;
       }
       let i = 0;
-      img.src = flaps[i];
       const tick = () => {
-        i = (i + 1) % flaps.length;
         img.src = flaps[i];
+        i = (i + 1) % flaps.length;
         frameTimer = runTimer(tick, FRAME_INTERVAL_MS);
       };
-      frameTimer = runTimer(tick, FRAME_INTERVAL_MS);
+
+      tick();
     }
 
     function placeRandomly(target) {
@@ -339,10 +340,6 @@ export function createBirdSpawner({
 
 // ---------------------------------------------------------------------
 // Fixture for manual testing in the browser before a real birds catalog
-// exists — swap these image paths for whatever bird assets you actually
-// have (mirrors the loginBG.jpg / bush1.png / tree.png approach used to
-// smoke-test #11). NOT wired up anywhere; import and pass to
-// createBirdSpawner's `birdPool` yourself, same as the level.js temp hook.
 // ---------------------------------------------------------------------
 export const DEV_FIXTURE_BIRD_POOL = [
   {
