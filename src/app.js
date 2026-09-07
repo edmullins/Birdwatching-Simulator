@@ -4,7 +4,6 @@ import { dirname, join } from 'path';
 
 import { buildSessionMiddleware } from './config/session.js';
 import authRoutes from './routes/authRoutes.js';
-import levelRoutes from './routes/levelRoutes.js';
 import runRoutes from './routes/runRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
 
@@ -19,7 +18,6 @@ app.use(buildSessionMiddleware());
 app.use(express.static(publicDir));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/levels', levelRoutes);
 app.use('/api/runs', runRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 

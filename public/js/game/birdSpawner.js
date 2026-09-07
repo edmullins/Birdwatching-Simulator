@@ -166,7 +166,7 @@ export function createBirdSpawner({
 
     const img = document.createElement('img');
     img.className = 'bird-frame';
-    img.src = def.frames[1] ?? restFrame(def);
+    img.src = restFrame(def); // overwritten synchronously by startFrameCycle() below; just a sane pre-mount default
     img.draggable = false;
     img.alt = def.name ?? 'bird';
     el.appendChild(img);
@@ -240,7 +240,7 @@ export function createBirdSpawner({
         },
 
         [BIRD_STATES.VISIBLE](machine, from) {
-          el.classList.remove('is-hidden', 'is-fleeing');
+          el.classList.remove('is-spawning', 'is-hidden', 'is-fleeing');
           el.classList.add('is-visible');
 
           if (from === BIRD_STATES.HIDDEN) {
