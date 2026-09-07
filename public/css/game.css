@@ -190,3 +190,40 @@
   /* clicks land on .bird-sprite, not the <img> itself */
   user-select: none;
 }
+
+/* ---------------------------------------------------------------
+   Binocular zoom mask (components/binocularMask.js, game/input.js — #13)
+   .binocular-mask is a sibling of .scene inside .scene-root: an opaque
+   overlay clipped to "rectangle minus two circles" (see the injected
+   SVG clipPath in binocularMask.js), so the circles are the only place
+   you can see through to the scene. It's invisible until is-active.
+   .scene-zoom-target (applied to .scene itself) is what actually scales
+   on zoom — the mask overlay never scales, so the lens shapes stay put
+   on screen while the content behind them zooms.
+   ----------------------------------------------------------------*/
+.binocular-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  background-image: url('../assets/occlusion/binocularsSilhouette.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.binocular-mask.is-active {
+  opacity: 1;
+}
+
+.scene-zoom-target {
+  transition: transform 120ms ease;
+  transform-origin: center;
+}
+
+.scene-zoom-target.is-zoomed {
+  transform: scale(var(--zoom-scale, 2));
+}

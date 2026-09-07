@@ -5,8 +5,26 @@ import {
   createBirdSpawner,
   DEV_FIXTURE_BIRD_POOL
 } from '../game/birdSpawner.js';
+import { attachLevelInput } from '../game/input.js';
+
+// router.js re-mounts views from scratch on every showView() and has no
+// unmount hook, so mountLevel() has to track and tear down its own
+// previous instance — otherwise every level visit leaves its spawner
+// timers and its window keydown/keyup listeners (input.js, #13) running
+// forever in the background, stacking up on every replay.
+let activeSpawner = null;
+let activeInput = null;
+
+function teardownLevel() {
+  activeSpawner?.destroy();
+  activeInput?.destroy();
+  activeSpawner = null;
+  activeInput = null;
+}
 
 export async function mountLevel(container, params = {}) {
+  teardownLevel(); // in case a previous level is still running
+
   container.hidden = true;
   container.innerHTML = `
     <div class="level-loading">Loading level...</div>
@@ -61,6 +79,9 @@ export async function mountLevel(container, params = {}) {
     });
 
     spawner.start();
+    activeSpawner = spawner;
+    activeInput = attachLevelInput({ sceneHost, scene });
+
     container.hidden = false;
   } catch (error) {
     console.error('Failed to start level scene:', error);
@@ -91,6 +112,7 @@ export async function mountLevel(container, params = {}) {
           levelTimestamps: run?.levelTimestamps ?? []
         });
 
+        teardownLevel();
         const { user } = await api.me();
         showView('mainMenu', { user });
       } catch (error) {
@@ -104,6 +126,7 @@ export async function mountLevel(container, params = {}) {
 
   if (backButton) {
     backButton.addEventListener('click', () => {
+      teardownLevel();
       showView('mainMenu', { user });
     });
   }
