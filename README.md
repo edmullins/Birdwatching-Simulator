@@ -1,6 +1,6 @@
-# Birdwatching Simulator — Design Document
+# Birdwatching Simulator - Design Document
 
-Status: Concept / Pre-development
+Status: development
 Stack: Node.js, npm, MongoDB, RESTful API
 
 ---
@@ -16,7 +16,7 @@ scores points and awards coins based on rarity. Each level gives the player
 more obscured, and more evasive as levels progress. Every 10 levels, the
 background location changes.
 
-Players can also upload their own bird photos/frames and background images.
+Players can also upload their own bird photos/frames.
 Uploads are private by default; players may submit them for admin review to
 become available to all players. Player-created birds (capped at "rare"
 rarity) can be raised as a tamagotchi-style pet in pre/post-game screens.
@@ -91,8 +91,7 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
 ## 5. User-Generated Content
 
 ### Uploads
-- Players can upload bird photos + 1–3 animation frames, and background
-  images (+ optional occlusion layer images).
+- Players can upload bird photos + 1–3 animation frames.
 - On upload, player sets a **scale range** (min/max) within global bounds
   defined by the game — this controls how large/small the bird can render
   in-game.
@@ -164,29 +163,6 @@ birds: {
   visibility: "private" | "submitted" | "approved" | "rejected",
   isUserCreature: Boolean,    // true if eligible for pet care
   care: { hunger, happiness, lastFedAt, lastPlayedAt }
-}
-
-backgrounds: {
-  _id, ownerId,
-  imageUrl, imageMeta,
-  unlockLevel: Number,
-  visibility: "private" | "submitted" | "approved" | "rejected",
-  occlusionLayers: [
-    { imageUrl, zIndex, imageMeta }
-  ]
-}
-
-levels: {
-  _id, levelNumber,
-  minBirdsRequired: Number,
-  birdDistanceRange: { min, max },
-  birdDensity: Number,
-  fleeEnabled: Boolean,
-  backgroundId
-}
-
-binoculars: {
-  _id, name, zoomMultiplier, cost, unlockedByLevel
 }
 
 runs: {

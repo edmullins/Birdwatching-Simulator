@@ -60,11 +60,12 @@ export function mountLevelSelect(container, user) {
     try {
       const res = await api.createRun(levelNumber);
       const run = res?.run;
+      const levelConfig = res?.levelConfig;
 
       toast(`Started level ${levelNumber} — good luck!`, true);
 
       if (run) {
-        showView('level', { run, levelNumber, user });
+        showView('level', { run, levelNumber, levelConfig, user });
       }
     } catch (err) {
       console.error(err);
@@ -73,4 +74,22 @@ export function mountLevelSelect(container, user) {
       card.classList.remove('pending');
     }
   });
+
+  const highestAvailableLevel = Math.min(maxLevelReached + 1, maxLevelCount);
+  const availableCard = carousel.querySelector(
+    `.level-card--available[data-level="${highestAvailableLevel}"]`
+  );
+
+  if (availableCard) {
+    requestAnimationFrame(() => {
+      const targetScroll =
+        availableCard.offsetLeft -
+        (carousel.clientWidth - availableCard.offsetWidth) / 2;
+
+      carousel.scrollLeft = Math.max(
+        0,
+        Math.min(targetScroll, carousel.scrollWidth - carousel.clientWidth)
+      );
+    });
+  }
 }

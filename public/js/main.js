@@ -3,10 +3,12 @@ import { api } from './api.js';
 import { mountLogin } from './views/login.js';
 import { mountMainMenu } from './views/mainMenu.js';
 import { mountLevel } from './views/level.js';
+import { mountRoundSummary } from './views/roundSummary.js';
 
 registerView('login', mountLogin);
 registerView('mainMenu', mountMainMenu);
 registerView('level', mountLevel);
+registerView('roundSummary', mountRoundSummary);
 // On load, check for an existing session before showing anything.
 async function init() {
   try {

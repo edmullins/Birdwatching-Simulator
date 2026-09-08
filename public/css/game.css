@@ -1,35 +1,315 @@
-.level-placeholder {
-  margin: auto;
-  max-width: 520px;
+.level-scene {
+  min-height: 100vh;
   padding: 32px 24px;
-  text-align: center;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  background: rgba(241, 236, 217, 0.88);
-  border: 1px solid rgba(166, 156, 124, 0.9);
-  box-shadow: 0 18px 34px -22px rgba(32, 42, 31, 0.55);
+  justify-content: center;
+  background-color: #24382d;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
 
-.level-placeholder h1 {
-  margin: 0;
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 2.2rem;
-  color: var(--ink);
+.level-back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1100;
+  /* above .binocular-mask (1000) so it stays clickable even while zoomed */
 }
 
-.level-placeholder p {
-  margin: 0;
-  color: rgba(32, 42, 31, 0.75);
-  line-height: 1.5;
-}
-
-.success-message {
-  color: var(--pine) !important;
-  font-weight: 600;
-  background: rgba(51, 80, 62, 0.08);
-  border-left: 3px solid var(--pine);
-  padding: 8px 10px;
+/* ---------------------------------------------------------------
+   Scene renderer (game/renderer.js — #11)
+   The element passed into renderScene(container, background) gets
+   .scene-root applied to it; give it real dimensions from whatever
+   wraps it (level.js / #14) — it fills 100% of its parent here.
+   ----------------------------------------------------------------*/
+.scene-root {
+  position: relative;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.level-scene>.scene-root {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.scene-occlusion-layer {
+  background-size: contain;
+}
+
+/* Occlusion + bird layers never intercept clicks themselves — only the
+   bird sprites birdSpawner.js (#12) appends inside a bird layer should
+   be clickable, so it sets pointer-events back to 'auto' per sprite. */
+.scene-occlusion-layer,
+.scene-bird-layer {
+  pointer-events: none;
+}
+
+.scene-bird-layer>* {
+  pointer-events: auto;
+}
+
+/* ---------------------------------------------------------------
+   Bird sprites (game/birdSpawner.js — #12)
+   Each sprite is a direct child of a .scene-bird-layer, positioned by
+   its center point (left/top = spawn point, translate(-50%,-50%) to
+   center on it) and scaled via the --bird-scale custom property, which
+   birdSpawner.js sets per-bird from levelConfig.birdDistanceRange.
+   ----------------------------------------------------------------*/
+.bird-sprite {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  transform: translate(-50%, -50%) scale(var(--bird-scale, 1));
+  transform-origin: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Hitbox slightly larger than the visual sprite (design doc §3) — the
+     padding grows the clickable area without growing what's drawn. */
+  padding: 10px;
+  box-sizing: content-box;
+}
+
+.bird-sprite.is-spawning,
+.bird-sprite.is-visible {
+  opacity: 1;
+}
+
+.bird-sprite.is-spawning,
+.bird-sprite.is-reappearing {
+  animation: bird-arrive 1000ms ease-out forwards;
+}
+
+@keyframes bird-arrive {
+  from {
+    opacity: 0;
+    transform:
+      translate(calc(-50% + 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%) scale(var(--bird-scale, 1));
+  }
+}
+
+.bird-sprite.is-fleeing {
+  opacity: 1;
+  animation: bird-leave 500ms ease-in forwards;
+}
+
+@keyframes bird-leave {
+  from {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%) scale(var(--bird-scale, 1));
+  }
+
+  to {
+    opacity: 0;
+    transform:
+      translate(calc(-50% - 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
+  }
+}
+
+.bird-sprite.is-hidden {
+  opacity: 0;
+  cursor: default;
+}
+
+.bird-frame {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  /* clicks land on .bird-sprite, not the <img> itself */
+  user-select: none;
+}
+
+/* ---------------------------------------------------------------
+   Binocular zoom mask (components/binocularMask.js, game/input.js — #13)
+   .binocular-mask is a sibling of .scene inside .scene-root: an opaque
+   overlay image (binocularsSilhouette.png — solid outside the two lens
+   cutouts, transparent inside them) stretched to fill the scene. It's
+   invisible until is-active. .scene-zoom-target (applied to .scene
+   itself) is what actually scales on zoom — the mask overlay never
+   scales, so the lens shapes stay put on screen while the content
+   behind them zooms.
+   ----------------------------------------------------------------*/
+.binocular-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  background-image: url('../assets/occlusion/binocularsSilhouette.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.binocular-mask.is-active {
+  opacity: 1;
+}
+
+.scene-zoom-target {
+  transition: transform 120ms ease;
+  transform-origin: center;
+}
+
+.scene-zoom-target.is-zoomed {
+  transform: scale(var(--zoom-scale, 2));
+}
+
+/* Level HUD */
+.level-hud {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 2000;
+  display: flex;
+  gap: 10px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.hud-chip {
+  display: block;
+  min-width: 86px;
+  padding: 8px 14px;
+  color: #f1ecd9;
+  background: rgba(32, 42, 31, 0.92);
+  border: 1px solid #f1ecd9;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  visibility: visible;
+  opacity: 1;
+}
+
+[data-hud="timer"] {
+  min-width: 76px;
+}
+
+/* Round summary */
+.round-summary {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(rgba(231, 225, 204, 0.28), rgba(231, 225, 204, 0.28)),
+    url('../assets/backgrounds/loginBG.jpg') center / cover no-repeat;
+}
+
+.summary-card {
+  width: min(100%, 620px);
+  padding: 36px 30px;
+  color: var(--ink);
+  background: rgba(241, 236, 217, 0.94);
+  border: 1px solid rgba(166, 156, 124, 0.9);
+  box-shadow: 0 18px 34px -22px rgba(32, 42, 31, 0.65);
+  text-align: center;
+}
+
+.summary-kicker {
+  margin: 0 0 8px;
+  color: var(--pine);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.summary-card h1 {
+  margin: 0 0 28px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.summary-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.summary-stat {
+  padding: 16px 10px;
+  background: rgba(231, 225, 204, 0.85);
+  border: 1px solid rgba(166, 156, 124, 0.75);
+}
+
+.summary-stat-label {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(32, 42, 31, 0.65);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.summary-stat strong {
+  display: block;
+  color: var(--pine-dark);
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.35rem;
+}
+
+.summary-badge {
+  margin: 0 0 22px;
+  padding: 10px 12px;
+  color: var(--pine);
+  background: rgba(51, 80, 62, 0.1);
+  border-left: 3px solid var(--pine);
+  font-weight: 700;
+}
+
+.summary-card [data-action="continue"] {
+  min-width: 150px;
+}
+
+@media (max-width: 560px) {
+  .level-hud {
+    top: 12px;
+  }
+
+  .summary-card {
+    padding: 28px 18px;
+  }
+
+  .summary-stat-row {
+    grid-template-columns: 1fr;
+  }
 }
