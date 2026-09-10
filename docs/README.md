@@ -6,16 +6,17 @@ Stack: Node.js, npm, MongoDB, RESTful API
 ---
 
 ## 1. Overview
-### Link: https://birdwatching-simulator.onrender.com/
+Render Link: https://birdwatching-simulator.onrender.com/
+Cumbie's Link: https://ethan.barrycumbie.com/
 
 A single-player browser-based birdwatching game. Players view scenes built from
 layered real-life asset photos with bird images/animations composited on top.
 Holding **spacebar** zooms in through a binocular-shaped mask. Clicking a bird
-scores points and awards coins based on rarity. Each level gives the player
-5 minutes to find a minimum number of birds; birds get smaller, more distant,
-more obscured, and more evasive as levels progress. Every 10 levels, the
-background location changes.
+scores points based on rarity. Each level gives the player 5 minutes to find a
+minimum number of birds; birds get smaller, more distant, more obscured, and 
+more evasive as levels progress. Every 10 levels, the background location changes.
 
+### Post MVP
 Players can also upload their own bird photos/frames.
 Uploads are private by default; players may submit them for admin review to
 become available to all players. Player-created birds (capped at "rare"
@@ -32,16 +33,15 @@ Leaderboard ranks players by **max level reached**.
 3. Birds fade into the scene over a 2–3 frame animation, at positions/sizes/
    z-depths determined by the level's difficulty parameters.
 4. Player scans the scene normally, or holds **space** to zoom in (binocular
-   mask overlay, higher effective zoom).
-5. Clicking a bird within its hitbox scores points and awards coins based on
-   the bird's rarity.
-6. Some birds "flee" — a short flight animation, then reappear elsewhere in
-   the scene — adding a tracking difficulty layer.
+   mask overlay, higher effective zoom, follows mouse).
+5. Clicking a bird within its hitbox scores points based on the bird's rarity.
+6. Some birds "flee" - a short flight animation, then reappear elsewhere in
+   the scene.
 7. Level is cleared when the player finds ≥ the level's minimum bird count
    before the timer expires. Failing to hit the minimum ends the run.
 8. Every 10 levels, the background (and its occlusion layers) changes.
 9. On run end, `levelReached` is submitted for leaderboard consideration
-   (server-validated — see §7).
+   (server-validated - see §7).
 
 ### Difficulty scaling per level
 - Minimum birds required (increases)
@@ -55,7 +55,7 @@ Leaderboard ranks players by **max level reached**.
 ## 3. Rendering Model
 
 - Each scene = **background layer** (static image) + one or more
-  **occlusion layers** (mid-ground assets, each with a fixed z-index) + one
+  **occlusion layers** (mid-ground assets, all absolutely positioned with a given z-index) + one
   or more **bird layers** (small absolutely-positioned sprites, each with
   its own z-index slot between occlusion layers).
 - Render order example: `background → occlusionLayer[0] → birds(z:1) →
@@ -64,9 +64,7 @@ Leaderboard ranks players by **max level reached**.
   the existing composited layer inside a clipped circular/binocular mask.
   Optionally pre-load slightly higher-res crops of birds currently in-scene
   for sharpness at max zoom.
-- Bird animation: 1–3 frame sprite cycle via CSS/JS interval — chosen over
-  video specifically because it's simple to validate/support for
-  user-uploaded content.
+- Bird animation: 1–3 frame sprite cycle via CSS/JS interval.
 - Bird state machine: `spawning (fade-in) → visible → [fleeing → hidden →
   reappear] → visible → clicked/despawned`.
 - Hitboxes: slightly larger than the visual sprite bounds, especially
@@ -78,20 +76,16 @@ Leaderboard ranks players by **max level reached**.
 
 Rarity tiers: **Basic, Rare, Epic, Legendary**
 
-- Higher rarity = more points + more coins on capture, and lower spawn
-  probability.
-- **User-uploaded birds are capped at Rare** — they cannot be Epic or
+- Higher rarity = more points, and lower spawn probability.
+- **User-uploaded birds are capped at Rare** - they cannot be Epic or
   Legendary. This preserves the value of curated/official high-rarity birds.
-- Coins (name TBD) are spent on binocular upgrades (increased zoom
-  multiplier). Binoculars are unlocked via coin cost and/or level
-  thresholds.
 
 ---
 
 ## 5. User-Generated Content
 
 ### Uploads
-- Players can upload bird photos + 1–3 animation frames.
+- Players can upload bird photos as 1–3 animation frames.
 - On upload, player sets a **scale range** (min/max) within global bounds
   defined by the game — this controls how large/small the bird can render
   in-game.
@@ -101,15 +95,15 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
   developer adjustment.
 
 ### Visibility states
-- `private` — default. Only visible to the uploading player, in their own
+- `private` - default. Only visible to the uploading player, in their own
   games.
-- `submitted` — player has requested review for public inclusion.
-- `approved` — admin-approved; now spawnable for all players.
-- `rejected` — admin-rejected; remains visible only to the owner, flagged
+- `submitted` - player has requested review for public inclusion.
+- `approved` - admin-approved; now spawnable for all players.
+- `rejected` - admin-rejected; remains visible only to the owner, flagged
   as rejected.
 
 ### Admin review
-- No separate admin login system — admin page/routes are gated behind the
+- No separate admin login system - admin page/routes are gated behind the
   normal auth session plus an `isAdmin` flag on the user document.
 - Admin page lists the review queue (`submitted` assets), lets the admin
   approve/reject bird and background submissions.
@@ -118,8 +112,8 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
 
 ## 6. Tamagotchi / Pet Care System
 
-- Any bird a player has **created** (`isUserCreature: true`) — which by
-  rarity rules means Basic or Rare only — can be cared for as a pet.
+- Any bird a player has **created** (`isUserCreature: true`) - which by
+  rarity rules means Basic or Rare only - can be cared for as a pet.
 - Available in pre-game and post-game screens (not during the timed run).
 - Mechanics: feed (raises hunger stat), play (a simple flappy-bird-style
   minigame that raises happiness).
@@ -146,11 +140,12 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
 
 ```js
 users: {
-  _id, username, email, passwordHash,
+  _id,username, email, passwordHash,
   isAdmin: Boolean,
-  coins: Number,
-  unlockedBinoculars: [binocularId],
-  stats: { maxLevelReached: Number }
+  stats: {
+   maxLevelReached: Number,
+   highScore: Number
+  }
 }
 
 birds: {
@@ -186,11 +181,8 @@ admin_review_queue: {
 
 ## 9. Open Questions / TBD
 
-- [ ] Name for the in-game currency (coins).
 - [ ] Exact global bounds for uploaded image dimensions and bird scale range.
 - [ ] Occlusion layer count limits per background.
-- [ ] Whether flee/relocate behavior should factor into scoring or
-      anti-cheat logging.
 - [ ] Image moderation approach for uploads (automated pre-filter +
       manual admin review, vs. manual-only at launch).
 - [ ] REST endpoint spec (planned as a follow-up doc).
