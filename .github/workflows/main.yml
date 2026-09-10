@@ -68,8 +68,8 @@ jobs:
         env:
 
           # intentionally hardcoded starter values
-          SSH_USER: barrycumbie
-          SSH_HOST: 34.106.229.37
+          SSH_USER: ethanmullins11
+          SSH_HOST: 34.95.9.15
           APP_DIR: app
           PM2_NAME: app
 
