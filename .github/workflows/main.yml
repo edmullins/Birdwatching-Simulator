@@ -21,7 +21,7 @@ jobs:
 
           # safer than StrictHostKeyChecking=no
           # ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
-          ssh-keyscan -H "8.234.41.172" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "34.95.9.15" >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
       - name: Deploy over SSH
