@@ -1,46 +1,111 @@
 name: deploy-main-to-gcp.yml
 
+# ============================================================
+# REGION: TRIGGER
+# when should this workflow run?
+# ============================================================
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+
 jobs:
   deploy:
+
+    # ========================================================
+    # REGION: RUNNER
+    # GitHub gives us a temporary Ubuntu machine
+    # ========================================================
+
     runs-on: ubuntu-latest
 
     steps:
+
+      # ======================================================
+      # REGION: PREPARE SSH
+      # prepare the GitHub runner to securely connect to GCP
+      # ======================================================
+
       - name: Prepare SSH
         shell: bash
         run: |
+
+          # create the runner's SSH directory
           mkdir -p ~/.ssh
+
+          # owner = rwx | group = none | others = none
           chmod 700 ~/.ssh
 
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          # write our PRIVATE deployment key from GitHub Secrets
+          # use a generic name because the key may be ED25519, RSA, etc.
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
 
-          # safer than StrictHostKeyChecking=no
-          # ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          # private key should only be readable/writable by its owner
+          chmod 600 ~/.ssh/deploy_key
+
+          # record the VM's SSH host key
+          # safer than disabling host-key checking
+          #
+          # later:
+          # ssh-keyscan -H "${{ vars.SSH_HOST }}" >> ~/.ssh/known_hosts
+
           ssh-keyscan -H 34.106.229.37 >> ~/.ssh/known_hosts
+
+          # known_hosts is not secret; it only needs to be readable
           chmod 644 ~/.ssh/known_hosts
+
+
+      # ======================================================
+      # REGION: DEPLOYMENT VARIABLES
+      # where are we going and what are we deploying?
+      # ======================================================
 
       - name: Deploy over SSH
         shell: bash
+
         env:
-          SSH_USER: barrycumbie #${{ secrets.SSH_USER }}
-          SSH_HOST: 34.106.229.37 #${{ secrets.SSH_HOST }}
-          APP_DIR:  app # ${{ vars.APP_DIR }}
-          PM2_NAME: app # ${{ vars.PM2_NAME }}
+
+          # intentionally hardcoded starter values
+          SSH_USER: barrycumbie
+          SSH_HOST: 34.106.229.37
+          APP_DIR: app
+          PM2_NAME: app
+
+          # eventually these could become GitHub Variables:
+          #
+          # SSH_USER: ${{ vars.SSH_USER }}
+          # SSH_HOST: ${{ vars.SSH_HOST }}
+          # APP_DIR: ${{ vars.APP_DIR }}
+          # PM2_NAME: ${{ vars.PM2_NAME }}
+
         run: |
-          ssh -i ~/.ssh/id_rsa -T "$SSH_USER@$SSH_HOST" <<EOF
+
+          # ==================================================
+          # REGION: SSH CONNECTION
+          # use our private key to authenticate to the VM
+          # ==================================================
+
+          ssh -i ~/.ssh/deploy_key -T "$SSH_USER@$SSH_HOST" <<EOF
+
+            # stop deployment if a command fails
             set -e
+
+
+            # ================================================
+            # REGION: DEPLOY APPLICATION
+            # these commands are now executing ON THE GCP VM
+            # ================================================
 
             cd "$APP_DIR"
 
             git pull
+
             npm ci
 
             pm2 restart "$PM2_NAME" || pm2 start app.mjs --name "$PM2_NAME"
-            
+
             pm2 save
+
           EOF
