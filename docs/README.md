@@ -1,14 +1,4 @@
-# Birdwatching Simulator - Design Document :bird:
-
-Status: development
-Stack: Node.js, npm, MongoDB, RESTful API
-
----
-
-## 1. Overview 🐦‍⬛
-Render Link: https://birdwatching-simulator.onrender.com/
-Cumbie's Link: https://ethan.barrycumbie.com/
-
+# Birdwatching Simulator :bird:
 A single-player browser-based birdwatching game. Players view scenes built from
 layered real-life asset photos with bird images/animations composited on top.
 Holding **spacebar** zooms in through a binocular-shaped mask. Clicking a bird
@@ -16,13 +6,137 @@ scores points based on rarity. Each level gives the player 5 minutes to find a
 minimum number of birds; birds get smaller, more distant, more obscured, and 
 more evasive as levels progress. Every 10 levels, the background location changes.
 
+### authorship + version
+
+`@edmullins` \| `2026-09-10` \| `GOLF`
+
+### Deployments, Codebase, & Repo Features
+
+| Resource                   | Link                                                                                         |
+|-----------------------------|-----------------------------------------------------------------------------------------------|
+| PROD codebase               | [`main`](https://github.com/edmullins/Birdwatching-Simulator/tree/main)                       |
+| PROD server                  | [`GCP`](https://ethan.barrycumbie.com/)                                                       |
+| DEV codebase                 | [`dev`](https://github.com/edmullins/Birdwatching-Simulator/tree/dev)                         |
+| DEV server                    | [`Render`](https://birdwatching-simulator.onrender.com/)                                     |
+| Docs                          | [`docs/`](https://github.com/edmullins/Birdwatching-Simulator/tree/main/docs)                |
+| Published docs                | [`GitHub Pages`](https://edmullins.github.io/Birdwatching-Simulator/)                          |
+| CI/CD workflow                | [`deploy.yml`](https://github.com/edmullins/Birdwatching-Simulator/blob/main/.github/workflows/main.yml) |
+| Successful PROD deployment    | [`GitHub Action`](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/34548516727/job/103106257786) |
+| Resolved GOLF issue           | [`issue #8`](https://github.com/edmullins/Birdwatching-Simulator/issues/8)       |
+
+### user story
+
+- **As a** burgeoning full-stack developer,
+- **I want** a CI/CD infrastructure
+- **so that** I can develop locally, manage my code in GitHub, and
+    automatically deploy changes to DEV and PROD environments.
+
+### narrative
+
+The project is a Node.js/Express backend with a MongoDB database, exposing a RESTful API, paired with a browser-based frontend for the layered-sprite gameplay. It's deployed in multiple places for redundancy/testing: a Render.com instance (https://birdwatching-simulator.onrender.com), a static GitHub Pages build, and a self-managed deployment on a GCP VM served under my teacher's domain at https://ethan.barrycumbie.com. The GCP VM setup means I'm handling my own server process management and networking. The repo also includes a GitHub Actions workflow for CI, so I can push changes and have them tested/deployed automatically.
+
+### architecture
+
+``` text
+LOCAL
+  │
+  ▼
+GitHub
+  │
+  ├── dev  ──► Render ─────────► DEV
+  │
+  └── main ──► GitHub Actions ─► GCP ──► PROD
+```
+
+### stack
+
+`HTML/CSS/JS` \| `Node.js` \| `Express` \| `Git/GitHub` \| `Render` \|
+`GCP` \| `Linux` \| `Nginx` \| `PM2` \| `Certbot` \| `GitHub Actions`
+
+### Project Structure
+
+```text
+├── README.md
+├── package-lock.json
+├── package.json
+├── public
+│   ├── assets
+│   │   ├── backgrounds
+│   │   │   ├── bg1.jpg
+│   │   │   ├── bg2.jpg
+│   │   │   ├── bg3.jpg
+│   │   │   ├── bg4.jpg
+│   │   │   ├── bg5.jpg
+│   │   │   └── loginBG.jpg
+│   │   ├── birds
+│   │   │   └── mourning-dove
+│   │   └── occlusion
+│   │       ├── binocularsSilhouette.png
+│   │       ├── bush1.png
+│   │       └── tree.png
+│   ├── css
+│   │   ├── game.css
+│   │   ├── main.css
+│   │   └── menu.css
+│   ├── index.html
+│   └── js
+│       ├── api.js
+│       ├── components
+│       │   ├── binocularMask.js
+│       │   ├── leaderboard.js
+│       │   └── levelSelect.js
+│       ├── game
+│       │   ├── birdSpawner.js
+│       │   ├── input.js
+│       │   ├── renderer.js
+│       │   └── stateMachine.js
+│       ├── main.js
+│       ├── router.js
+│       └── views
+│           ├── level.js
+│           ├── login.js
+│           ├── mainMenu.js
+│           └── roundSummary.js
+├── server.js
+└── src
+    ├── app.js
+    ├── config
+    │   ├── db.js
+    │   └── session.js
+    ├── controllers
+    │   ├── authController.js
+    │   ├── leaderboardController.js
+    │   └── runController.js
+    ├── middleware
+    │   ├── requireAdmin.js
+    │   └── requireAuth.js
+    ├── models
+    │   ├── bird.js
+    │   ├── run.js
+    │   └── user.js
+    ├── routes
+    │   ├── authRoutes.js
+    │   ├── leaderboardRoutes.js
+    │   └── runRoutes.js
+    └── services
+        ├── antiCheat.js
+        └── difficultyEngine.js
+```
+
+### GCP
+
+external IP: `34.95.9.15`\
+Linux user: `ethanmullins11`\
+instructor SSH public key installed: `yes`
+
+---
+
 ### Post MVP
-Players can also upload their own bird photos/frames.
+
+* Players can also upload their own bird photos/frames.
 Uploads are private by default; players may submit them for admin review to
 become available to all players. Player-created birds (capped at "rare"
 rarity) can be raised as a tamagotchi-style pet in pre/post-game screens.
-
-Leaderboard ranks players by **max level reached**.
 
 ---
 
