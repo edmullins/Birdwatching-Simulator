@@ -1,11 +1,11 @@
-# Birdwatching Simulator - Design Document
+# Birdwatching Simulator - Design Document :bird:
 
 Status: development
 Stack: Node.js, npm, MongoDB, RESTful API
 
 ---
 
-## 1. Overview
+## 1. Overview 🐦‍⬛
 Render Link: https://birdwatching-simulator.onrender.com/
 Cumbie's Link: https://ethan.barrycumbie.com/
 
