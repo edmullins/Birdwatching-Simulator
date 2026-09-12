@@ -40,7 +40,7 @@ jobs:
             git pull
             npm ci
 
-            pm2 restart "$PM2_NAME" || pm2 start app.mjs --name "$PM2_NAME"
+            pm2 restart "$PM2_NAME" || pm2 start app.js --name "$PM2_NAME"
 
             pm2 save
           EOF
