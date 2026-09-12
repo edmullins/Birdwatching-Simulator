@@ -27,7 +27,7 @@ jobs:
       - name: Deploy over SSH
         shell: bash
         env:
-          SSH_USER: birdwatch-sim #${{ secrets.SSH_USER }}
+          SSH_USER: ethanmullins11 #${{ secrets.SSH_USER }}
           SSH_HOST: 34.95.9.15 #${{ secrets.SSH_HOST }}
           APP_DIR:  app/src # ${{ vars.APP_DIR }}
           PM2_NAME: app # ${{ vars.PM2_NAME }}
