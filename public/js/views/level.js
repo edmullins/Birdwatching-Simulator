@@ -25,25 +25,19 @@
 import { showView } from '../router.js';
 import { api } from '../api.js';
 import { mountScene } from '../game/renderer.js';
-import { createBirdSpawner } from '../game/birdSpawner.js';
+import { createBirdSpawner, DEV_FIXTURE_BIRD_POOL } from '../game/birdSpawner.js';
 import { attachLevelInput } from '../game/input.js';
 
 // Design doc §2: a flat 5 minutes per level. getLevelConfig() has no
 // duration field today, so this is hardcoded rather than read from
 // levelConfig — move it there if levels ever need different durations.
 const ROUND_DURATION_MS = 5 * 60 * 1000;
-
-const { birds } = await api.getBirds();
-const foundBirdIds = [];
-
-const spawner = createBirdSpawner({
-  scene,
-  levelConfig,
-  birdPool: birds,
-  onCatch: ({ bird }) => {
-    // scoring logic
-  }
-});
+const POINTS_BY_RARITY = {
+  basic: 10,
+  rare: 25,
+  epic: 60,
+  legendary: 150
+};
 
 // router.js re-mounts views from scratch on every showView() and has no
 // unmount hook (see #13), so mountLevel() tracks and tears down its own
@@ -104,8 +98,8 @@ export async function mountLevel(container, params = {}) {
 
   // Round state, closed over by the spawner's onCatch and the timer tick.
   let birdsFoundCount = 0;
+  let foundBirdIds = [];
   let pointsEarned = 0;
-  let coinsEarned = 0;
   let finished = false; // guards against a click and the timer racing each other
 
   async function finishRound(outcome) {
@@ -169,18 +163,19 @@ export async function mountLevel(container, params = {}) {
 
     const scene = await mountScene(sceneHost, sceneConfig);
 
+    const { birds } = await api.getBirds();
+    const birdPool = birds.length > 0 ? birds : DEV_FIXTURE_BIRD_POOL;;
+
     const spawner = createBirdSpawner({
       scene,
       levelConfig,
-      birdPool: birds,
+      birdPool: birdPool,
       onCatch: ({ bird }) => {
         if (finished) return;
 
         foundBirdIds.push(bird.id);
-
         birdsFoundCount += 1;
         pointsEarned += POINTS_BY_RARITY[bird.rarity] ?? 0;
-        coinsEarned += COINS_BY_RARITY[bird.rarity] ?? 0;
 
         if (counterEl) {
           counterEl.textContent = `${birdsFoundCount} / ${minBirdsRequired}`;
