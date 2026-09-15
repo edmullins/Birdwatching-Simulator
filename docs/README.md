@@ -105,6 +105,7 @@ GitHub
     │   └── session.js
     ├── controllers
     │   ├── authController.js
+    │   ├── birdController.js
     │   ├── leaderboardController.js
     │   └── runController.js
     ├── middleware
@@ -116,6 +117,7 @@ GitHub
     │   └── user.js
     ├── routes
     │   ├── authRoutes.js
+    │   ├── birdRoutes.js
     │   ├── leaderboardRoutes.js
     │   └── runRoutes.js
     └── services
