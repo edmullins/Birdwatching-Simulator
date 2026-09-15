@@ -1,5 +1,6 @@
 import Run from '../models/run.js';
 import User from '../models/user.js';
+import mongoose from 'mongoose';
 import { getLevelConfig } from '../services/difficultyEngine.js';
 
 // Create a new run for the authenticated user
@@ -41,8 +42,15 @@ export async function completeRun(req, res) {
     const {
       outcome = 'timeout',
       birdsFound = [],
-      levelTimestamps = []
+      levelTimestamps = [],
+      score = 0
     } = req.body ?? {};
+
+    const validBirdIds = Array.isArray(birdsFound)
+      ? birdsFound.filter((id) => mongoose.isValidObjectId(id))
+      : [];
+
+    const submittedScore = Number.isFinite(score) && score > 0 ? score : 0;
 
     const run = await Run.findOne({
       _id: runId,
@@ -58,7 +66,7 @@ export async function completeRun(req, res) {
     }
 
     run.birdsFound = Array.isArray(birdsFound)
-      ? birdsFound
+      ? validBirdIds
       : run.birdsFound;
 
     run.levelTimestamps =
@@ -71,18 +79,37 @@ export async function completeRun(req, res) {
 
     await run.save();
 
-    if (outcome === 'cleared') {
-      const user = await User.findById(req.session.userId);
+    // bestScore is tracked regardless of outcome (a strong run that
+    // times out before hitting minBirdsRequired still earned real
+    // points) — only maxLevelReached is gated on 'cleared'.
+    const user = await User.findById(req.session.userId);
 
-      if (user) {
-        const previousMax = user.stats?.maxLevelReached ?? 0;
+    if (user) {
+      user.stats = user.stats || {};
+      let changed = false;
 
+      if (outcome === 'cleared') {
+        const previousMax = user.stats.maxLevelReached ?? 0;
         if (run.levelReached > previousMax) {
-          user.stats = user.stats || {};
           user.stats.maxLevelReached = run.levelReached;
-          await user.save();
+          changed = true;
         }
       }
+
+      const previousBest = user.stats.bestScore ?? 0;
+      if (submittedScore > previousBest) {
+        user.stats.bestScore = submittedScore;
+        changed = true;
+      }
+
+      const foundCount = Array.isArray(birdsFound) ? birdsFound.length : 0;
+      if (foundCount > 0) {
+        user.stats.totalBirdsFound =
+          (user.stats.totalBirdsFound ?? 0) + foundCount;
+        changed = true;
+      }
+
+      if (changed) await user.save();
     }
 
     res.json({ run });

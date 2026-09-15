@@ -25,10 +25,7 @@
 import { showView } from '../router.js';
 import { api } from '../api.js';
 import { mountScene } from '../game/renderer.js';
-import {
-  createBirdSpawner,
-  DEV_FIXTURE_BIRD_POOL
-} from '../game/birdSpawner.js';
+import { createBirdSpawner } from '../game/birdSpawner.js';
 import { attachLevelInput } from '../game/input.js';
 
 // Design doc §2: a flat 5 minutes per level. getLevelConfig() has no
@@ -36,8 +33,17 @@ import { attachLevelInput } from '../game/input.js';
 // levelConfig — move it there if levels ever need different durations.
 const ROUND_DURATION_MS = 5 * 60 * 1000;
 
-const POINTS_BY_RARITY = { basic: 10, rare: 25, epic: 60, legendary: 150 };
-const COINS_BY_RARITY = { basic: 1, rare: 3, epic: 8, legendary: 20 };
+const { birds } = await api.getBirds();
+const foundBirdIds = [];
+
+const spawner = createBirdSpawner({
+  scene,
+  levelConfig,
+  birdPool: birds,
+  onCatch: ({ bird }) => {
+    // scoring logic
+  }
+});
 
 // router.js re-mounts views from scratch on every showView() and has no
 // unmount hook (see #13), so mountLevel() tracks and tears down its own
@@ -116,7 +122,8 @@ export async function mountLevel(container, params = {}) {
     try {
       const { run: completedRun } = await api.completeRun(runId, {
         outcome,
-        birdsFound: [],
+        birdsFound: foundBirdIds,
+        score: pointsEarned,
         levelTimestamps: [
           {
             level: levelNumber,
@@ -143,7 +150,6 @@ export async function mountLevel(container, params = {}) {
         birdsFound: birdsFoundCount,
         minBirdsRequired,
         points: pointsEarned,
-        coins: coinsEarned,
         previousMaxLevel: user?.stats?.maxLevelReached ?? 0,
         run: completedRun,
         user: freshUser
@@ -166,16 +172,23 @@ export async function mountLevel(container, params = {}) {
     const spawner = createBirdSpawner({
       scene,
       levelConfig,
-      birdPool: DEV_FIXTURE_BIRD_POOL,
+      birdPool: birds,
       onCatch: ({ bird }) => {
         if (finished) return;
+
+        foundBirdIds.push(bird.id);
 
         birdsFoundCount += 1;
         pointsEarned += POINTS_BY_RARITY[bird.rarity] ?? 0;
         coinsEarned += COINS_BY_RARITY[bird.rarity] ?? 0;
-        if (counterEl) counterEl.textContent = `${birdsFoundCount} / ${minBirdsRequired}`;
 
-        if (birdsFoundCount >= minBirdsRequired) finishRound('cleared');
+        if (counterEl) {
+          counterEl.textContent = `${birdsFoundCount} / ${minBirdsRequired}`;
+        }
+
+        if (birdsFoundCount >= minBirdsRequired) {
+          finishRound('cleared');
+        }
       }
     });
 

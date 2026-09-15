@@ -21,19 +21,18 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    coins: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    unlockedBinoculars: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Binocular',
-      },
-    ],
     stats: {
       maxLevelReached: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      bestScore: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      totalBirdsFound: {
         type: Number,
         default: 0,
         min: 0,
@@ -64,9 +63,12 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
   return {
     id: this._id,
     username: this.username,
-    coins: this.coins,
-    unlockedBinoculars: this.unlockedBinoculars,
-    stats: { maxLevelReached: this.stats.maxLevelReached },
+    isAdmin: this.isAdmin,
+    stats: { 
+      maxLevelReached: this.stats.maxLevelReached,
+      bestScore: this.stats.bestScore,
+      totalBirdsFound: this.stats.totalBirdsFound,
+     },
   };
 };
 

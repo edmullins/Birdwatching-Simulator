@@ -50,4 +50,6 @@ export const api = {
     request(`/runs/${runId}/complete`, { method: 'POST', body: payload }),
 
   getLeaderboard: (limit) => request(`/leaderboard${limit ? `?limit=${limit}` : ''}`),
+
+  getBirds: () => request('/birds')
 };
