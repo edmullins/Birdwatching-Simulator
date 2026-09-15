@@ -8,6 +8,7 @@ export function mountMainMenu(container, params) {
   const user = params?.user;
   const username = user?.username ?? 'birder';
   const maxLevelReached = user?.stats?.maxLevelReached ?? 0;
+  const bestScore = user?.stats?.bestScore ?? 0;
   console.log('mountMainMenu called with params:', params, 'username:', username, 'maxLevelReached:', maxLevelReached);
 
 
@@ -44,27 +45,18 @@ export function mountMainMenu(container, params) {
         <div class="stat-grid">
           <article class="stat-card">
             <span class="stat-label">Runs</span>
-            <strong>12</strong>
+            <strong>${maxLevelReached}</strong>
           </article>
 
           <article class="stat-card">
             <span class="stat-label">Best score</span>
-            <strong>2,450</strong>
+            <strong>${bestScore.toLocaleString()}</strong>
           </article>
 
           <article class="stat-card">
             <span class="stat-label">Species ID</span>
-            <strong>19</strong>
+            <strong>${user?.stats?.totalBirdsFound ?? 0}</strong>
           </article>
-        </div>
-
-        <div class="mini-panel">
-          <span class="panel-label">Recent sightings</span>
-          <ul class="species-list">
-            <li><span>Great Blue Heron</span><em>+120</em></li>
-            <li><span>Red-winged Blackbird</span><em>+96</em></li>
-            <li><span>Wood Duck</span><em>+82</em></li>
-          </ul>
         </div>
 
         <div class="mini-panel leaderboard-panel">
