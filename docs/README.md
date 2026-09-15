@@ -21,7 +21,7 @@ more evasive as levels progress. Every 10 levels, the background location change
 | Docs                          | [`docs/`](https://github.com/edmullins/Birdwatching-Simulator/tree/main/docs)                |
 | Published docs                | [`GitHub Pages`](https://edmullins.github.io/Birdwatching-Simulator/)                          |
 | CI/CD workflow                | [`deploy.yml`](https://github.com/edmullins/Birdwatching-Simulator/blob/main/.github/workflows/main.yml) |
-| Successful PROD deployment    | [`GitHub Action`](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/34548516727/job/103106257786) |
+| Successful PROD deployment    | [`GitHub Action`](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/34979983425/job/104417459023) |
 | Resolved GOLF issue           | [`issue #8`](https://github.com/edmullins/Birdwatching-Simulator/issues/8)       |
 
 ### user story
