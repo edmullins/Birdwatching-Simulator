@@ -29,7 +29,7 @@ jobs:
         env:
           SSH_USER: ethanmullins11 #${{ secrets.SSH_USER }}
           SSH_HOST: 34.95.9.15 #${{ secrets.SSH_HOST }}
-          APP_DIR:  app/src # ${{ vars.APP_DIR }}
+          APP_DIR:  app # ${{ vars.APP_DIR }}
           PM2_NAME: app # ${{ vars.PM2_NAME }}
         run: |
           ssh -i ~/.ssh/deploy_key -T "$SSH_USER@$SSH_HOST" <<EOF
