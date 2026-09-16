@@ -12,8 +12,9 @@ const runSchema = new mongoose.Schema({
   startedAt: { type: Date, required: true },
   endedAt: { type: Date },
   levelTimestamps: { type: [levelTimestampSchema], default: [] },
+  spawnedBirds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bird' }],
   birdsFound: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bird' }],
-  status: { type: String, enum: ['in_progress','completed','valid','flagged'], default: 'in_progress' }
+  status: { type: String, enum: ['in_progress', 'completed', 'valid', 'flagged'], default: 'in_progress' }
 }, { timestamps: true });
 
 const Run = mongoose.model('Run', runSchema);
