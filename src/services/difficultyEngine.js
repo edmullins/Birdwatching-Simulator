@@ -13,29 +13,35 @@ export function getLevelConfig(levelNumber) {
 
   const progress = levelNumber - 1;
   const backgroundIndex = Math.floor(progress / 10) % BACKGROUNDS.length;
+  const backgroundImage = BACKGROUNDS[backgroundIndex];
+
+  const scene = {
+  imageUrl: backgroundImage,
+  occlusionLayers: [
+    {
+      imageUrl: '/assets/occlusion/tree.png',
+      zIndex: 1
+    },
+    {
+      imageUrl: '/assets/occlusion/bush1.png',
+      zIndex: 2,
+      x: 18,
+      y: 68,
+      width: 28,
+      height: 22
+    }
+  ]
+};
 
   return {
     levelNumber,
-
-    minBirdsRequired: Math.min(
-      10,
-      2 + Math.floor(progress / 3)
-    ),
-
-    // Bird distance range decreases as levels progress, making birds appear smaller
-    // Number is used as size of Image
+    minBirdsRequired: Math.floor(progress + (progress / 2)),
     birdDistanceRange: {
       min: Math.round(Math.max(0.25, 0.9 - progress * 0.02) * 100) / 100,
       max: Math.round(Math.max(0.75, 1.8 - progress * 0.03) * 100) / 100
     },
-
-    birdDensity: Math.min(
-      8,
-      1 + Math.floor(progress / 4)
-    ),
-
+    birdDensity: Math.min(8, 1 + Math.floor(progress / 4)),
     fleeEnabled: levelNumber >= 5,
-
-    backgroundAsset: BACKGROUNDS[backgroundIndex]
+    scene
   };
 }

@@ -19,7 +19,6 @@ export function mountRoundSummary(container, params = {}) {
     birdsFound = 0,
     minBirdsRequired = 0,
     points = 0,
-    coins = 0,
     user
   } = params ?? {};
 
@@ -39,10 +38,6 @@ export function mountRoundSummary(container, params = {}) {
           <div class="summary-stat">
             <span class="summary-stat-label">Score</span>
             <strong>${escapeHtml(points)}</strong>
-          </div>
-          <div class="summary-stat">
-            <span class="summary-stat-label">Coins earned</span>
-            <strong>+${escapeHtml(coins)}</strong>
           </div>
         </div>
 
