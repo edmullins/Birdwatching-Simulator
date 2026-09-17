@@ -54,6 +54,7 @@ GitHub
 `GCP` \| `Linux` \| `Nginx` \| `PM2` \| `Certbot` \| `GitHub Actions`
 
 ### Project Structure
+<img width="4025" height="7948" alt="diagram" src="https://github.com/user-attachments/assets/b16c7a25-2f50-4a3a-908c-dc583570514d" />
 
 ```text
 ├── README.md
