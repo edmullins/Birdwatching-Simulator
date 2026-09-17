@@ -1,4 +1,8 @@
 // public/js/components/levelSelect.js
+// ---------------------------------------------------------------------
+// Level select carousel component: mounts a scrollable list of level cards
+// (completed, available, locked) and handles clicks to start a new run.
+// ---------------------------------------------------------------------
 import { showView } from '../router.js';
 import { api } from '../api.js';
 

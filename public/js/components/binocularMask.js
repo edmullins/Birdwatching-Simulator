@@ -1,8 +1,11 @@
 // public/js/components/binocularMask.js
-
+// ---------------------------------------------------------------------
+// Binocular mask overlay component: creates a vignette overlay and
+// CSS-scales the scene behind it when zoomed. The overlay is appended
 // game/input.js owns *when* to zoom (the spacebar hold); this owns
 // *what zooming looks like*, so it can be swapped (different mask
 // shape, different zoom curve) without touching input handling.
+// ---------------------------------------------------------------------
 
 /**
  * @param {object} options
