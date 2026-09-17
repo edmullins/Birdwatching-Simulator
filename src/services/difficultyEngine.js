@@ -1,3 +1,8 @@
+// src/services/difficultyEngine.js 
+// ---------------------------------------------------------------------
+// Returns per-level config (background, minBirdsRequired, 
+// birdDistanceRange, birdDensity, fleeEnabled) based on levelNumber.
+// ---------------------------------------------------------------------
 const BACKGROUNDS = [
   '/assets/backgrounds/bg1.jpg',
   '/assets/backgrounds/bg2.jpg',

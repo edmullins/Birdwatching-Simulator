@@ -1,3 +1,8 @@
+// src/models/user.js 
+// ---------------------------------------------------------------------
+// Mongoose User schema with bcrypt helpers, toSafeJSON() for 
+// client-safe output, and stats fields.
+// ---------------------------------------------------------------------
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 

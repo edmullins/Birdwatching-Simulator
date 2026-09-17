@@ -1,3 +1,11 @@
+// public/js/views/login.js
+// ---------------------------------------------------------------------
+// Renders the auth page and switches between "login" and "register" modes.
+// Handles form validation, submits credentials to api.login or
+// api.register, displays errors, and navigates to the main menu on success.
+// UX details: tabbed mode toggle, client-side input constraints, and an
+// accessible error region for polite announcements.
+// ---------------------------------------------------------------------
 import { showView } from '../router.js';
 import { api } from '../api.js';
 

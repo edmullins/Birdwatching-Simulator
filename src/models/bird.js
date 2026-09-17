@@ -1,3 +1,8 @@
+// src/models/bird.js 
+// ---------------------------------------------------------------------
+// Mongoose schema for birds: frames, scale/image metadata, 
+// rarity/visibility rules, owner/creature constraints, and point helper
+// ---------------------------------------------------------------------
 const RARITY_TIERS = ['basic', 'rare', 'epic', 'legendary'];
 const MAX_USER_UPLOAD_RARITY = 'rare';
 

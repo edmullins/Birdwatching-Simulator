@@ -1,14 +1,12 @@
 // public/js/views/roundSummary.js
-//
-// Issue #14 — Round summary: shown after views/level.js completes a run
+// ---------------------------------------------------------------------
+// Round summary: shown after views/level.js completes a run
 // (either the player hit minBirdsRequired, or the timer ran out). Shows
-// score/coins/new max level, "Continue" routes back to main menu.
+// score/new max level, "Continue" routes back to main menu.
 //
-// All the numbers here (outcome, birdsFound, points, coins) come from
+// All the numbers here (outcome, birdsFound, points) come from
 // params — this view doesn't recompute or re-verify anything server-side.
-// Per level.js's header: points/coins are a client-side stand-in (the
-// server doesn't compute or persist either yet), so what's shown here is
-// this run's tally, not a confirmed, saved balance.
+// ---------------------------------------------------------------------
 
 import { showView } from '../router.js';
 

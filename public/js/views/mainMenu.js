@@ -1,4 +1,10 @@
 // public/js/views/mainMenu.js
+// ---------------------------------------------------------------------
+// Renders the main menu for a signed-in user: greets user, shows season
+// stats (runs, best score, species count), mounts the level selector and
+// live leaderboard, and handles logout via api.logout() then navigates
+// to the login view. Escapes username to prevent XSS.
+// ---------------------------------------------------------------------
 import { showView } from '../router.js';
 import { api } from '../api.js';
 import { mountLevelSelect } from '../components/levelSelect.js';

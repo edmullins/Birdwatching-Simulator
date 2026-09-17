@@ -156,39 +156,6 @@
   padding: 18px 16px;
 }
 
-.species-list {
-  list-style: none;
-  margin: 14px 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.species-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(166, 156, 124, 0.7);
-}
-
-.species-list li:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.species-list span {
-  color: var(--ink);
-}
-
-.species-list em {
-  font-style: normal;
-  font-weight: 700;
-  color: var(--pine);
-}
-
 .leaderboard-panel {
   display: flex;
   flex-direction: column;
@@ -397,7 +364,6 @@
 }
 /* ---------------------------------------------------------------
    Leaderboard — loading/empty/error states + current-player row
-   (issue #7: real data replaces the placeholder rows)
    ----------------------------------------------------------------*/
 .leaderboard-loading,
 .leaderboard-empty,

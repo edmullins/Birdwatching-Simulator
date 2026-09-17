@@ -1,3 +1,8 @@
+// src/services/antiCheat.js 
+// ---------------------------------------------------------------------
+// Server-side run validator: checks durations, sequential level rules, 
+// bird ID validity/availability, and produces valid + violations.
+// ---------------------------------------------------------------------
 import mongoose from 'mongoose';
 import Bird from '../models/bird.js';
 import { getLevelConfig } from './difficultyEngine.js';

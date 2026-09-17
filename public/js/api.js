@@ -1,3 +1,9 @@
+// public/js/api.js
+// ---------------------------------------------------------------------
+// Lightweight fetch wrapper and api client: sends credentials, parses
+// JSON, throws Errors with server error/details on non-2xx responses,
+// and exposes auth, run, leaderboard, and birds endpoints.
+// ---------------------------------------------------------------------
 const BASE = '/api';
 
 /**

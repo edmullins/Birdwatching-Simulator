@@ -1,19 +1,17 @@
 // public/js/game/stateMachine.js
-//
-// Issue #12 — Bird state machine.
-//
+// ---------------------------------------------------------------------
 // Generic finite state machine for a single bird instance's lifecycle
 // (design doc §3):
 //
 //   spawning -> visible -> [fleeing -> hidden -> visible] -> visible -> clicked -> despawned
 //
-// This file has no DOM or rendering opinions and no idea what "birdDensity"
-// or "rarity" mean — game/birdSpawner.js owns creating/positioning bird
+// game/birdSpawner.js owns creating/positioning bird
 // instances and deciding *when* a transition should happen (flee timers,
 // click handling). This file only owns *validating and executing*
 // transitions and firing lifecycle hooks, so animation code (fade-in,
 // flee flight, hide/reappear) has one place to hook into instead of being
 // scattered through birdSpawner's timer callbacks.
+// ---------------------------------------------------------------------
 
 export const BIRD_STATES = Object.freeze({
   SPAWNING: 'spawning',

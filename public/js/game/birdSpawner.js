@@ -1,7 +1,5 @@
 // public/js/game/birdSpawner.js
 //
-// Issue #12 — Bird spawner.
-//
 // Keeps up to `levelConfig.birdDensity` bird sprites alive at once inside
 // a rendered scene (game/renderer.js, #11): picks which bird to spawn via
 // rarity weighting, sizes it from `levelConfig.birdDistanceRange`, and
@@ -11,30 +9,6 @@
 //
 // When a bird despawns (caught), a replacement spawns automatically so
 // the level stays at `birdDensity` concurrent birds until stop()/destroy().
-//
-// ---------------------------------------------------------------------
-// BACKEND DEPENDENCY: there's no birds catalog endpoint yet — Bird model
-// is an empty stub. This is a different situation from Background (#11):
-// backgrounds ended up as dev-curated static config because only birds
-// are meant to be user-uploaded / admin-reviewed per the design doc, so
-// birds genuinely need a real DB-backed catalog (something like
-// GET /api/birds?visibility=approved) rather than a static list.
-//
-// Until that exists, createBirdSpawner() takes a `birdPool` array
-// directly instead of fetching one itself — this module is fully usable
-// today against a hand-built fixture (see the bottom of this file for
-// one) and won't need to change shape once the endpoint lands; just swap
-// what populates `birdPool`.
-//
-//   birdPool = [{ id, name, frames: [imageUrl, ...], rarity }, ...]
-//   // rarity: 'basic' | 'rare' | 'epic' | 'legendary' — must have at
-//   // least one entry in `rarityWeights` (defaults below cover all four).
-//   //
-//   // frames[0] is the rest/sitting pose, shown whenever the bird is
-//   // landed. frames[1:] are a flap/transition cycle (e.g. wings up,
-//   // wings down) played only while the bird is arriving (spawning) —
-//   // see restFrame()/flapFrames() below. A single-frame bird just has
-//   // no flap animation, which is a valid, boring bird.
 // ---------------------------------------------------------------------
 
 import { createBirdStateMachine, BIRD_STATES } from './stateMachine.js';
@@ -350,56 +324,6 @@ export const DEV_FIXTURE_BIRD_POOL = [
       '/assets/birds/mourning-dove/sitting.png',     // frames[0] = rest pose
       '/assets/birds/mourning-dove/flight_up.png',   // frames[1:] = flap cycle
       '/assets/birds/mourning-dove/flight_down.png'
-    ]
-  },
-  {
-    id: 'dev-2',
-    name: 'Great Blue Heron',
-    rarity: 'rare',
-    frames: [
-      '/assets/birds/great-blue-heron/sitting.png',     // frames[0] = rest pose
-      '/assets/birds/great-blue-heron/flight_up.png',   // frames[1:] = flap cycle
-      '/assets/birds/great-blue-heron/flight_down.png'
-    ]
-  },
-  {
-    id: 'dev-3',
-    name: 'Grackle',
-    rarity: 'basic',
-    frames: [
-      '/assets/birds/grackle/sitting.png',     // frames[0] = rest pose
-      '/assets/birds/grackle/flight_up.png',   // frames[1:] = flap cycle
-      '/assets/birds/grackle/flight_down.png'
-    ]
-  },
-  {
-    id: 'dev-4',
-    name: 'Northern Cardinal',
-    rarity: 'basic',
-    frames: [
-      '/assets/birds/northern-cardinal/sitting.png',     // frames[0] = rest pose
-      '/assets/birds/northern-cardinal/flight_up.png',   // frames[1:] = flap cycle
-      '/assets/birds/northern-cardinal/flight_down.png'
-    ]
-  },
-  {
-    id: 'dev-5',
-    name: 'Red Bellied Woodpecker',
-    rarity: 'legendary',
-    frames: [
-      '/assets/birds/red-bellied-woodpecker/sitting.png',     // frames[0] = rest pose
-      '/assets/birds/red-bellied-woodpecker/flight_up.png',   // frames[1:] = flap cycle
-      '/assets/birds/red-bellied-woodpecker/flight_down.png'
-    ]
-  },
-  {
-    id: 'dev-6',
-    name: 'Tufted Titmouse',
-    rarity: 'epic',
-    frames: [
-      '/assets/birds/tufted-titmouse/sitting.png',     // frames[0] = rest pose
-      '/assets/birds/tufted-titmouse/flight_up.png',   // frames[1:] = flap cycle
-      '/assets/birds/tufted-titmouse/flight_down.png'
     ]
   }
 ];

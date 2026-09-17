@@ -1,3 +1,8 @@
+// src/controllers/runController.js 
+// ---------------------------------------------------------------------
+// Creates runs (validates unlocks/available birds) and completes runs 
+// (validates via anti-cheat, updates run/user stats, flags suspicious runs).
+// ---------------------------------------------------------------------
 import Run from '../models/run.js';
 import User from '../models/user.js';
 import mongoose from 'mongoose';

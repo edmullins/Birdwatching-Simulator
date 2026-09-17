@@ -1,15 +1,13 @@
 // public/js/game/input.js
 //
-// Issue #13 — Input handling: spacebar-hold binocular zoom.
-//
 // ---------------------------------------------------------------------
 // This issue's other checkbox — click detection with slightly-larger-
 // than-visual hitboxes — already exists: game/birdSpawner.js (#12) gives
 // every .bird-sprite its own click listener, and game.css pads each
-// sprite's clickable box beyond its drawn image (design doc §3). There's
-// nothing left to add for that here; a second, centralized click handler
-// on top of it would just be two systems racing over the same clicks.
-// This file is the spacebar/zoom half only.
+// sprite's clickable box beyond its drawn image (design doc §3). A 
+// second, centralized click handler on top of it would just be two
+// systems racing over the same clicks. This file is the spacebar/zoom
+// half only.
 // ---------------------------------------------------------------------
 //
 // Wires game/renderer.js's scene handle together with

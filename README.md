@@ -11,7 +11,7 @@ Stack: Node.js, npm, MongoDB, RESTful API
 A single-player browser-based birdwatching game. Players view scenes built from
 layered real-life asset photos with bird images/animations composited on top.
 Holding **spacebar** zooms in through a binocular-shaped mask. Clicking a bird
-scores points and awards coins based on rarity. Each level gives the player
+scores points based on rarity. Each level gives the player
 5 minutes to find a minimum number of birds; birds get smaller, more distant,
 more obscured, and more evasive as levels progress. Every 10 levels, the
 background location changes.
@@ -33,8 +33,7 @@ Leaderboard ranks players by **max level reached**.
    z-depths determined by the level's difficulty parameters.
 4. Player scans the scene normally, or holds **space** to zoom in (binocular
    mask overlay, higher effective zoom).
-5. Clicking a bird within its hitbox scores points and awards coins based on
-   the bird's rarity.
+5. Clicking a bird within its hitbox scores points based on the bird's rarity.
 6. Some birds "flee" — a short flight animation, then reappear elsewhere in
    the scene — adding a tracking difficulty layer.
 7. Level is cleared when the player finds ≥ the level's minimum bird count
@@ -78,13 +77,9 @@ Leaderboard ranks players by **max level reached**.
 
 Rarity tiers: **Basic, Rare, Epic, Legendary**
 
-- Higher rarity = more points + more coins on capture, and lower spawn
-  probability.
+- Higher rarity = more points, and lower spawn probability.
 - **User-uploaded birds are capped at Rare** — they cannot be Epic or
   Legendary. This preserves the value of curated/official high-rarity birds.
-- Coins (name TBD) are spent on binocular upgrades (increased zoom
-  multiplier). Binoculars are unlocked via coin cost and/or level
-  thresholds.
 
 ---
 
@@ -148,9 +143,7 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
 users: {
   _id, username, email, passwordHash,
   isAdmin: Boolean,
-  coins: Number,
-  unlockedBinoculars: [binocularId],
-  stats: { maxLevelReached: Number }
+  stats: { maxLevelReached: Number, bestScore: Number, totalBirdsFound: Number }
 }
 
 birds: {
@@ -186,21 +179,9 @@ admin_review_queue: {
 
 ## 9. Open Questions / TBD
 
-- [ ] Name for the in-game currency (coins).
 - [ ] Exact global bounds for uploaded image dimensions and bird scale range.
 - [ ] Occlusion layer count limits per background.
-- [ ] Whether flee/relocate behavior should factor into scoring or
-      anti-cheat logging.
 - [ ] Image moderation approach for uploads (automated pre-filter +
       manual admin review, vs. manual-only at launch).
 - [ ] REST endpoint spec (planned as a follow-up doc).
 - [ ] Express/Mongoose schema implementation (planned as a follow-up).
-
----
-
-## 10. Tech Stack
-
-- **Runtime:** Node.js
-- **Package management:** npm
-- **Database:** MongoDB
-- **API architecture:** RESTful

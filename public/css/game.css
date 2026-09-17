@@ -71,7 +71,7 @@
 }
 
 /* ---------------------------------------------------------------
-   Bird sprites (game/birdSpawner.js — #12)
+   Bird sprites
    Each sprite is a direct child of a .scene-bird-layer, positioned by
    its center point (left/top = spawn point, translate(-50%,-50%) to
    center on it) and scaled via the --bird-scale custom property, which
@@ -153,7 +153,7 @@
 }
 
 /* ---------------------------------------------------------------
-   Binocular zoom mask (components/binocularMask.js, game/input.js — #13)
+   Binocular zoom mask
    .binocular-mask is a sibling of .scene inside .scene-root: an opaque
    overlay image (binocularsSilhouette.png — solid outside the two lens
    cutouts, transparent inside them) stretched to fill the scene. It's

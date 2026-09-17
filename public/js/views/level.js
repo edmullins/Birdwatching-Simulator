@@ -1,25 +1,13 @@
 // public/js/views/level.js
-//
-// Issue #14 — Level view: timer, min-birds-found counter, wires
-// renderer.js (#11) + birdSpawner.js (#12) + input.js (#13) together,
-// and on timer expiry or hitting minBirdsRequired, completes the run and
-// routes to views/roundSummary.js.
-//
 // ---------------------------------------------------------------------
-// SCORING IS A CLIENT-SIDE STAND-IN. POST /runs/:id/complete
-// (src/controllers/runController.js) doesn't compute or persist score or
-// coins at all — it only records birdsFound/levelTimestamps and bumps
-// user.stats.maxLevelReached. There's no `run.score` field, and
-// user.coins is never touched. POINTS_BY_RARITY/COINS_BY_RARITY below
-// exist purely so the round summary has numbers to show; they are not
-// what actually gets saved, and the coins shown do not reflect the
-// player's real balance until the backend awards them for real.
-//
-// Similarly, `birdsFound` is sent to the server as an empty array: the
-// Run schema expects real Bird ObjectIds (`ref: 'Bird'`), but there's no
-// birds catalog yet (see birdSpawner.js's own header) — DEV_FIXTURE_BIRD_POOL's
-// ids ('dev-1' etc.) aren't valid ObjectIds and would fail to cast if sent.
-// Once a real catalog exists, swap birdsFound to the caught birds' real ids.
+// Manages level HUD and round lifecycle: mounts scene, starts bird
+// spawner and input, updates timer and counter, awards points on catches,
+// and completes the run (API) on clear or timeout. Ensures teardown of
+// spawner, input listeners, and the interval timer to avoid leaks.
+// 
+// Lifecycle (high level):
+// mountLevel -> mountScene -> start spawner & input -> run timer ->
+// onCatch / timer expiry -> finishRound -> teardownLevel
 // ---------------------------------------------------------------------
 
 import { showView } from '../router.js';
@@ -215,7 +203,7 @@ export async function mountLevel(container, params = {}) {
     backButton.addEventListener('click', () => {
       // Leaving early does NOT call completeRun — the run is simply
       // abandoned (stays 'in_progress' in the DB forever; there's no
-      // /abandon endpoint). Pre-existing behavior, not new to #14.
+      // /abandon endpoint). Pre-existing behavior.
       if (finished) return;
       teardownLevel();
       showView('mainMenu', { user });

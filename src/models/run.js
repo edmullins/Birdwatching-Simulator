@@ -1,3 +1,8 @@
+// src/models/run.js 
+// ---------------------------------------------------------------------
+// Mongoose Run schema: user, level, timestamps, found birds, and status
+// enum (in_progress, completed, flagged).
+// ---------------------------------------------------------------------
 import mongoose from 'mongoose';
 
 const levelTimestampSchema = new mongoose.Schema({
