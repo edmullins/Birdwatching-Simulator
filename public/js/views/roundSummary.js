@@ -17,10 +17,14 @@ export function mountRoundSummary(container, params = {}) {
     birdsFound = 0,
     minBirdsRequired = 0,
     points = 0,
+    run,
     user
   } = params ?? {};
 
   const cleared = outcome === 'cleared';
+  const timeTaken = run?.endedAt && run?.startedAt
+    ? ((new Date(run.endedAt) - new Date(run.startedAt)) / 1000).toFixed(1) + 's'
+    : 'N/A';
 
   container.innerHTML = `
     <div class="round-summary">
@@ -36,6 +40,10 @@ export function mountRoundSummary(container, params = {}) {
           <div class="summary-stat">
             <span class="summary-stat-label">Score</span>
             <strong>${escapeHtml(points)}</strong>
+          </div>
+          <div class="summary-stat">
+            <span class="summary-stat-label">Time</span>
+            <strong>${escapeHtml(timeTaken)}</strong>
           </div>
         </div>
 

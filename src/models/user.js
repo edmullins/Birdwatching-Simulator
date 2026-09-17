@@ -32,6 +32,11 @@ const userSchema = new mongoose.Schema(
         default: 0,
         min: 0,
       },
+      totalRuns: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
       bestScore: {
         type: Number,
         default: 0,
@@ -71,6 +76,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     isAdmin: this.isAdmin,
     stats: { 
       maxLevelReached: this.stats.maxLevelReached,
+      totalRuns: this.stats.totalRuns,
       bestScore: this.stats.bestScore,
       totalBirdsFound: this.stats.totalBirdsFound,
      },

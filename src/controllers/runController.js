@@ -51,7 +51,6 @@ export async function createRun(req, res) {
       startedAt: now,
       levelTimestamps: [
         {
-          level: levelNumber,
           enteredAt: now
         }
       ],
@@ -129,6 +128,10 @@ export async function completeRun(req, res) {
         run.levelReached > (user.stats.maxLevelReached ?? 0)
       ) {
         user.stats.maxLevelReached = run.levelReached;
+        user.stats.totalRuns = (user.stats.totalRuns ?? 0) + 1;
+      }
+      else if (outcome === 'cleared' || outcome === 'timeout') {
+        user.stats.totalRuns = (user.stats.totalRuns ?? 0) + 1;
       }
 
       if (submittedScore > (user.stats.bestScore ?? 0)) {

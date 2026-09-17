@@ -13,10 +13,9 @@ import { mountLeaderboard } from '../components/leaderboard.js';
 export function mountMainMenu(container, params) {
   const user = params?.user;
   const username = user?.username ?? 'birder';
-  const maxLevelReached = user?.stats?.maxLevelReached ?? 0;
+  const totalRuns = user?.stats?.totalRuns ?? 0;
   const bestScore = user?.stats?.bestScore ?? 0;
-  console.log('mountMainMenu called with params:', params, 'username:', username, 'maxLevelReached:', maxLevelReached);
-
+  const totalBirdsFound = user?.stats?.totalBirdsFound ?? 0;
 
   container.innerHTML = `
     <header class="menu-topbar">
@@ -51,17 +50,17 @@ export function mountMainMenu(container, params) {
         <div class="stat-grid">
           <article class="stat-card">
             <span class="stat-label">Runs</span>
-            <strong>${maxLevelReached}</strong>
+            <strong>${totalRuns}</strong>
           </article>
 
           <article class="stat-card">
-            <span class="stat-label">Best score</span>
+            <span class="stat-label">Best Score</span>
             <strong>${bestScore.toLocaleString()}</strong>
           </article>
 
           <article class="stat-card">
-            <span class="stat-label">Species ID</span>
-            <strong>${user?.stats?.totalBirdsFound ?? 0}</strong>
+            <span class="stat-label">Birds Found</span>
+            <strong>${totalBirdsFound}</strong>
           </article>
         </div>
 

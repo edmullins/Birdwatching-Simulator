@@ -108,7 +108,6 @@ export async function mountLevel(container, params = {}) {
         score: pointsEarned,
         levelTimestamps: [
           {
-            level: levelNumber,
             enteredAt: startedAt.toISOString(),
             exitedAt: new Date().toISOString()
           }
