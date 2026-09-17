@@ -3,6 +3,7 @@ import User from '../models/user.js';
 import mongoose from 'mongoose';
 import { getLevelConfig } from '../services/difficultyEngine.js';
 import { validateRun } from '../services/antiCheat.js';
+import Bird from '../models/bird.js';
 
 // Create a new run for the authenticated user
 export async function createRun(req, res) {
@@ -21,11 +22,34 @@ export async function createRun(req, res) {
     }
 
     const levelConfig = getLevelConfig(levelNumber);
+    const availableBirds = await Bird.find({
+      $or: [
+        { visibility: 'approved' },
+        {
+          ownerId: user._id,
+          visibility: 'private'
+        }
+      ]
+    }).select('_id');
+
+    if (availableBirds.length === 0) {
+      return res.status(503).json({
+        message: 'No birds are available for this level'
+      });
+    }
+
+    const now = new Date();
+
     const run = await Run.create({
       userId: user._id,
       levelReached: levelNumber,
-      startedAt: new Date(),
-      levelTimestamps: [{ level: levelNumber, enteredAt: new Date() }],
+      startedAt: now,
+      levelTimestamps: [
+        {
+          level: levelNumber,
+          enteredAt: now
+        }
+      ],
       status: 'in_progress'
     });
 
@@ -73,11 +97,11 @@ export async function completeRun(req, res) {
 
     const user = await User.findById(req.session.userId);
 
-    const validation = validateRun({
+    const validation = await validateRun({
       run,
+      userId: req.session.userId,
       outcome,
       birdsFound,
-      spawnedBirds: run.spawnedBirds,
       endedAt,
       previousMaxLevel: user?.stats?.maxLevelReached ?? 0
     });
@@ -86,7 +110,7 @@ export async function completeRun(req, res) {
       ? birdsFound.filter((id) => mongoose.isValidObjectId(id))
       : [];
 
-    run.birdsFound = [...new Set(validBirdIds.map((id) => id.toString()))];
+    run.birdsFound = validBirdIds.map((id) => id.toString());
     run.endedAt = endedAt;
     run.status = validation.valid ? 'completed' : 'flagged';
 

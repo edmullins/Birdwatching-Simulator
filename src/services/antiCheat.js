@@ -1,24 +1,27 @@
 import mongoose from 'mongoose';
+import Bird from '../models/bird.js';
 import { getLevelConfig } from './difficultyEngine.js';
 
 const ROUND_DURATION_MS = 5 * 60 * 1000;
 const DURATION_TOLERANCE_MS = 10 * 1000;
 
-export function validateRun({
+export async function validateRun({
   run,
+  userId,
   outcome,
   birdsFound,
-  spawnedBirds = [],
   endedAt = new Date(),
   previousMaxLevel = 0
 }) {
   const violations = [];
   const submittedBirds = Array.isArray(birdsFound) ? birdsFound : [];
-  const uniqueBirds = new Set(submittedBirds);
+
+  if (!Array.isArray(birdsFound)) {
+    violations.push('birdsFound must be an array');
+  }
 
   const config = getLevelConfig(run.levelReached);
   const requiredBirds = config.minBirdsRequired;
-
   const elapsedMs = endedAt.getTime() - run.startedAt.getTime();
   const foundCount = submittedBirds.length;
 
@@ -30,32 +33,37 @@ export function validateRun({
     violations.push('Levels must be completed sequentially');
   }
 
-  if (submittedBirds.some((id) => !mongoose.isValidObjectId(id))) {
+  const validObjectIds = submittedBirds.filter((id) =>
+    mongoose.isValidObjectId(id)
+  );
+
+  if (validObjectIds.length !== submittedBirds.length) {
     violations.push('birdsFound contains invalid bird IDs');
   }
 
-  if (uniqueBirds.size !== submittedBirds.length) {
-    violations.push('birdsFound contains duplicate bird IDs');
-  }
+  const availableBirds = await Bird.find({
+    _id: { $in: validObjectIds },
+    $or: [
+      { visibility: 'approved' },
+      {
+        ownerId: userId,
+        visibility: 'private'
+      }
+    ]
+  })
+    .select('_id')
+    .lean();
 
-  const spawnedIds = new Set(
-    spawnedBirds
-      .filter((id) => mongoose.isValidObjectId(id))
-      .map((id) => id.toString())
+  const availableIds = new Set(
+    availableBirds.map((bird) => bird._id.toString())
   );
 
-  if (spawnedIds.size > 0) {
-    const unspawnedBird = submittedBirds.some(
-      (id) => !spawnedIds.has(id.toString())
-    );
+  const unavailableBird = validObjectIds.some(
+    (id) => !availableIds.has(id.toString())
+  );
 
-    if (unspawnedBird) {
-      violations.push('A submitted bird was not spawned for this run');
-    }
-  }
-
-  if (foundCount > spawnedIds.size && spawnedIds.size > 0) {
-    violations.push('More birds were found than were spawned');
+  if (unavailableBird) {
+    violations.push('A submitted bird is not available for this run');
   }
 
   const clearedEarly =

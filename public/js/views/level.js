@@ -164,12 +164,15 @@ export async function mountLevel(container, params = {}) {
     const scene = await mountScene(sceneHost, sceneConfig);
 
     const { birds } = await api.getBirds();
-    const birdPool = birds.length > 0 ? birds : DEV_FIXTURE_BIRD_POOL;;
+
+    if (!Array.isArray(birds) || birds.length === 0) {
+      throw new Error('No official birds are available');
+    }
 
     const spawner = createBirdSpawner({
       scene,
       levelConfig,
-      birdPool: birdPool,
+      birdPool: birds,
       onCatch: ({ bird }) => {
         if (finished) return;
 

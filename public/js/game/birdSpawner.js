@@ -351,5 +351,55 @@ export const DEV_FIXTURE_BIRD_POOL = [
       '/assets/birds/mourning-dove/flight_up.png',   // frames[1:] = flap cycle
       '/assets/birds/mourning-dove/flight_down.png'
     ]
+  },
+  {
+    id: 'dev-2',
+    name: 'Great Blue Heron',
+    rarity: 'rare',
+    frames: [
+      '/assets/birds/great-blue-heron/sitting.png',     // frames[0] = rest pose
+      '/assets/birds/great-blue-heron/flight_up.png',   // frames[1:] = flap cycle
+      '/assets/birds/great-blue-heron/flight_down.png'
+    ]
+  },
+  {
+    id: 'dev-3',
+    name: 'Grackle',
+    rarity: 'basic',
+    frames: [
+      '/assets/birds/grackle/sitting.png',     // frames[0] = rest pose
+      '/assets/birds/grackle/flight_up.png',   // frames[1:] = flap cycle
+      '/assets/birds/grackle/flight_down.png'
+    ]
+  },
+  {
+    id: 'dev-4',
+    name: 'Northern Cardinal',
+    rarity: 'basic',
+    frames: [
+      '/assets/birds/northern-cardinal/sitting.png',     // frames[0] = rest pose
+      '/assets/birds/northern-cardinal/flight_up.png',   // frames[1:] = flap cycle
+      '/assets/birds/northern-cardinal/flight_down.png'
+    ]
+  },
+  {
+    id: 'dev-5',
+    name: 'Red Bellied Woodpecker',
+    rarity: 'legendary',
+    frames: [
+      '/assets/birds/red-bellied-woodpecker/sitting.png',     // frames[0] = rest pose
+      '/assets/birds/red-bellied-woodpecker/flight_up.png',   // frames[1:] = flap cycle
+      '/assets/birds/red-bellied-woodpecker/flight_down.png'
+    ]
+  },
+  {
+    id: 'dev-6',
+    name: 'Tufted Titmouse',
+    rarity: 'epic',
+    frames: [
+      '/assets/birds/tufted-titmouse/sitting.png',     // frames[0] = rest pose
+      '/assets/birds/tufted-titmouse/flight_up.png',   // frames[1:] = flap cycle
+      '/assets/birds/tufted-titmouse/flight_down.png'
+    ]
   }
 ];
