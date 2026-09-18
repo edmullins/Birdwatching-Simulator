@@ -47,11 +47,19 @@ export function attachLevelInput({
     return event.code === 'Space' || event.key === ' ' || event.key === 'Spacebar';
   }
 
+  // #27: cursor-following pan. Only listens while zoomed — attaching a
+  // mousemove handler for the entire (non-zoomed) round would just be
+  // unnecessary work on every mouse tick for a value nothing reads.
+  function handleMousemove(event) {
+    mask.panTo(event.clientX, event.clientY);
+  }
+
   function handleKeydown(event) {
     if (!isSpacebar(event) || zoomed) return; // ignore held-key repeat events
     event.preventDefault(); // Space's default action scrolls the page
     zoomed = true;
     mask.setZoomed(true);
+    eventTarget.addEventListener('mousemove', handleMousemove);
     onZoomChange(true);
   }
 
@@ -60,6 +68,7 @@ export function attachLevelInput({
     event.preventDefault();
     zoomed = false;
     mask.setZoomed(false);
+    eventTarget.removeEventListener('mousemove', handleMousemove);
     onZoomChange(false);
   }
 
@@ -85,6 +94,10 @@ export function attachLevelInput({
         mask.setZoomed(false);
         onZoomChange(false);
       }
+      // Unconditional and harmless if it was never attached (e.g.
+      // destroy() called while not zoomed) — removeEventListener on a
+      // listener that isn't registered is a silent no-op.
+      eventTarget.removeEventListener('mousemove', handleMousemove);
       eventTarget.removeEventListener('keydown', handleKeydown);
       eventTarget.removeEventListener('keyup', handleKeyup);
       mask.destroy();

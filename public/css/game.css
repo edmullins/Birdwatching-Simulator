@@ -83,14 +83,12 @@
   height: 64px;
   transform: translate(-50%, -50%) scale(var(--bird-scale, 1));
   transform-origin: center;
-  cursor: pointer;
+  cursor: url('../assets/icons/search_icon.svg'), pointer;
   opacity: 0;
   transition: opacity 300ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Hitbox slightly larger than the visual sprite (design doc §3) — the
-     padding grows the clickable area without growing what's drawn. */
   padding: 10px;
   box-sizing: content-box;
 }
@@ -173,20 +171,21 @@
   background-color: transparent;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 120ms ease;
+  transition: opacity 100ms ease;
 }
 
 .binocular-mask.is-active {
-  opacity: 1;
+  opacity: .8;
 }
 
 .scene-zoom-target {
-  transition: transform 120ms ease;
+  transition: transform 100ms ease;
   transform-origin: center;
 }
 
 .scene-zoom-target.is-zoomed {
-  transform: scale(var(--zoom-scale, 2));
+  transform:
+    translate(var(--pan-x, 0px), var(--pan-y, 0px)) scale(var(--zoom-scale, 2));
 }
 
 /* Level HUD */
