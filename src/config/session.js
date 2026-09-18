@@ -1,3 +1,8 @@
+// src/config/session.js 
+// ---------------------------------------------------------------------
+// Builds express-session middleware backed by connect-mongo with
+// secure cookie and 7‑day lifetime.
+// ---------------------------------------------------------------------
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 

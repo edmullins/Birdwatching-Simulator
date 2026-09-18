@@ -1,3 +1,8 @@
+// src/controllers/authController.js
+// ---------------------------------------------------------------------
+// Register/login/logout/me handlers with input validation, 
+// password hashing, session regeneration, and safe user responses.
+// ---------------------------------------------------------------------
 import User from '../models/user.js';
 
 const USERNAME_MIN = 3;

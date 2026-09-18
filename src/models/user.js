@@ -1,3 +1,8 @@
+// src/models/user.js 
+// ---------------------------------------------------------------------
+// Mongoose User schema with bcrypt helpers, toSafeJSON() for 
+// client-safe output, and stats fields.
+// ---------------------------------------------------------------------
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
@@ -23,6 +28,11 @@ const userSchema = new mongoose.Schema(
     },
     stats: {
       maxLevelReached: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      totalRuns: {
         type: Number,
         default: 0,
         min: 0,
@@ -66,6 +76,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     isAdmin: this.isAdmin,
     stats: { 
       maxLevelReached: this.stats.maxLevelReached,
+      totalRuns: this.stats.totalRuns,
       bestScore: this.stats.bestScore,
       totalBirdsFound: this.stats.totalBirdsFound,
      },

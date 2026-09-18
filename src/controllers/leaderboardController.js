@@ -1,3 +1,8 @@
+// src/controllers/leaderboardController.js 
+// ---------------------------------------------------------------------
+// Returns top N users sorted by stats.maxLevelReached plus the current
+// player's rank ("you") computed server-side.
+// ---------------------------------------------------------------------
 import User from '../models/user.js';
 
 const DEFAULT_LIMIT = 20;

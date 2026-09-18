@@ -1,9 +1,8 @@
-// Minimal client-side router. Each "view" is a <section data-view="name">
-// in index.html. registerView() associates a name with a mount function;
-// showView() hides every view except the requested one and (re)runs its
-// mount function, passing along any params (e.g. the logged-in user).
-// Views are re-mounted from scratch on every show — fine at this app's
-// size, and avoids needing separate mount/update lifecycles for now.
+// public/js/router.js
+// ---------------------------------------------------------------------
+// Minimal client-side router: registerView, getContainer, showView.
+// Hides all [data-view] sections and re-mounts the requested view.
+// ---------------------------------------------------------------------
 
 const mounts = new Map();
 

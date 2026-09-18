@@ -1,3 +1,9 @@
+// src/app.js 
+// ---------------------------------------------------------------------
+// Sets up the Express app: static public serving, JSON/session 
+// middleware, mounts API route modules, and returns index.html
+//  as an SPA fallback.
+// ---------------------------------------------------------------------
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';

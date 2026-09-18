@@ -1,3 +1,8 @@
+// src/controllers/birdController.js 
+// ---------------------------------------------------------------------
+// Returns available birds (approved or the caller's private uploads) 
+// as a client-friendly payload.
+// ---------------------------------------------------------------------
 import Bird from '../models/bird.js';
 
 export async function listAvailableBirds(req, res) {

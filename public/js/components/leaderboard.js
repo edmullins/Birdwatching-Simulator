@@ -1,3 +1,9 @@
+// public/js/components/leaderboard.js
+// ---------------------------------------------------------------------
+// Leaderboard component: fetches and renders the top N players by
+// stats.maxLevelReached, plus the current player's rank ("you") if
+// they're outside the top N.
+// ---------------------------------------------------------------------
 import { api } from '../api.js';
 
 /**

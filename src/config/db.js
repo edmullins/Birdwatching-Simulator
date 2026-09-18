@@ -1,3 +1,7 @@
+// src/config/db.js 
+// ---------------------------------------------------------------------
+// Connects to MongoDB using MONGODB_URI; logs success or exits on failure.
+// ---------------------------------------------------------------------
 import mongoose from 'mongoose';
 
 export async function connectDB() {

@@ -1,3 +1,8 @@
+// public/js/main.js
+// ---------------------------------------------------------------------
+// App entry: registers view mount functions and on load checks api.me()
+// to show either mainMenu (with user) or login.
+// ---------------------------------------------------------------------
 import { registerView, showView } from './router.js';
 import { api } from './api.js';
 import { mountLogin } from './views/login.js';

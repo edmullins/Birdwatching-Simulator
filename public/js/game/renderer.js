@@ -1,7 +1,5 @@
 // public/js/game/renderer.js
 //
-// Issue #11 — Scene renderer.
-//
 // Composites a level's background + occlusion layers + bird layers into
 // the DOM, following the z-index model from the design doc (§3):
 //
@@ -32,14 +30,6 @@
 //       }, ...
 //     ]
 //   }
-//
-// ---------------------------------------------------------------------
-// No backend dependency: backgrounds are dev-curated static content
-// (only birds get user uploads / admin review), not a DB collection.
-// difficultyEngine resolves `background` from level number and returns
-// it as part of the level config payload (e.g. from POST /api/runs) —
-// this module has no fetch of its own. Pass that object straight into
-// mountScene()/renderScene(); there is nothing to load by id here.
 // ---------------------------------------------------------------------
 
 /**

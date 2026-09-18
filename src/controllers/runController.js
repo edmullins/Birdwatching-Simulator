@@ -1,7 +1,14 @@
+// src/controllers/runController.js 
+// ---------------------------------------------------------------------
+// Creates runs (validates unlocks/available birds) and completes runs 
+// (validates via anti-cheat, updates run/user stats, flags suspicious runs).
+// ---------------------------------------------------------------------
 import Run from '../models/run.js';
 import User from '../models/user.js';
 import mongoose from 'mongoose';
 import { getLevelConfig } from '../services/difficultyEngine.js';
+import { validateRun } from '../services/antiCheat.js';
+import Bird from '../models/bird.js';
 
 // Create a new run for the authenticated user
 export async function createRun(req, res) {
@@ -20,11 +27,33 @@ export async function createRun(req, res) {
     }
 
     const levelConfig = getLevelConfig(levelNumber);
+    const availableBirds = await Bird.find({
+      $or: [
+        { visibility: 'approved' },
+        {
+          ownerId: user._id,
+          visibility: 'private'
+        }
+      ]
+    }).select('_id');
+
+    if (availableBirds.length === 0) {
+      return res.status(503).json({
+        message: 'No birds are available for this level'
+      });
+    }
+
+    const now = new Date();
+
     const run = await Run.create({
       userId: user._id,
       levelReached: levelNumber,
-      startedAt: new Date(),
-      levelTimestamps: [{ level: levelNumber, enteredAt: new Date() }],
+      startedAt: now,
+      levelTimestamps: [
+        {
+          enteredAt: now
+        }
+      ],
       status: 'in_progress'
     });
 
@@ -46,10 +75,6 @@ export async function completeRun(req, res) {
       score = 0
     } = req.body ?? {};
 
-    const validBirdIds = Array.isArray(birdsFound)
-      ? birdsFound.filter((id) => mongoose.isValidObjectId(id))
-      : [];
-
     const submittedScore = Number.isFinite(score) && score > 0 ? score : 0;
 
     const run = await Run.findOne({
@@ -65,54 +90,67 @@ export async function completeRun(req, res) {
       return res.status(400).json({ message: 'Run is not in progress' });
     }
 
-    run.birdsFound = Array.isArray(birdsFound)
-      ? validBirdIds
-      : run.birdsFound;
+    run.birdsFound = Array.isArray(birdsFound) ? birdsFound : [];
 
     run.levelTimestamps =
       Array.isArray(levelTimestamps) && levelTimestamps.length
         ? levelTimestamps
         : run.levelTimestamps;
 
-    run.endedAt = new Date();
-    run.status = 'completed';
+    const endedAt = new Date();
+
+    const user = await User.findById(req.session.userId);
+
+    const validation = await validateRun({
+      run,
+      userId: req.session.userId,
+      outcome,
+      birdsFound,
+      endedAt,
+      previousMaxLevel: user?.stats?.maxLevelReached ?? 0
+    });
+
+    const validBirdIds = Array.isArray(birdsFound)
+      ? birdsFound.filter((id) => mongoose.isValidObjectId(id))
+      : [];
+
+    run.birdsFound = validBirdIds.map((id) => id.toString());
+    run.endedAt = endedAt;
+    run.status = validation.valid ? 'completed' : 'flagged';
 
     await run.save();
 
-    // bestScore is tracked regardless of outcome (a strong run that
-    // times out before hitting minBirdsRequired still earned real
-    // points) — only maxLevelReached is gated on 'cleared'.
-    const user = await User.findById(req.session.userId);
-
-    if (user) {
+    if (user && validation.valid) {
       user.stats = user.stats || {};
-      let changed = false;
 
-      if (outcome === 'cleared') {
-        const previousMax = user.stats.maxLevelReached ?? 0;
-        if (run.levelReached > previousMax) {
-          user.stats.maxLevelReached = run.levelReached;
-          changed = true;
-        }
+      if (
+        outcome === 'cleared' &&
+        run.levelReached > (user.stats.maxLevelReached ?? 0)
+      ) {
+        user.stats.maxLevelReached = run.levelReached;
+        user.stats.totalRuns = (user.stats.totalRuns ?? 0) + 1;
+      }
+      else if (outcome === 'cleared' || outcome === 'timeout') {
+        user.stats.totalRuns = (user.stats.totalRuns ?? 0) + 1;
       }
 
-      const previousBest = user.stats.bestScore ?? 0;
-      if (submittedScore > previousBest) {
+      if (submittedScore > (user.stats.bestScore ?? 0)) {
         user.stats.bestScore = submittedScore;
-        changed = true;
       }
 
-      const foundCount = Array.isArray(birdsFound) ? birdsFound.length : 0;
-      if (foundCount > 0) {
-        user.stats.totalBirdsFound =
-          (user.stats.totalBirdsFound ?? 0) + foundCount;
-        changed = true;
-      }
+      user.stats.totalBirdsFound =
+        (user.stats.totalBirdsFound ?? 0) + validation.foundCount;
 
-      if (changed) await user.save();
+      await user.save();
     }
 
-    res.json({ run });
+    return res.json({
+      run,
+      validation: {
+        valid: validation.valid,
+        violations: validation.violations
+      }
+    });
   } catch (error) {
     console.error('completeRun error:', error);
     res.status(500).json({ message: 'Failed to complete run' });
