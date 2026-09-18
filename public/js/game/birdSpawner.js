@@ -20,6 +20,13 @@ const DEFAULT_RARITY_WEIGHTS = {
   legendary: 2
 };
 
+const FLEE_REROLL_CHANCES = {
+  basic: 0.5,
+  rare: 0.6,
+  epic: 0.75,
+  legendary: 0.9
+};
+
 // Timing constants (ms) — reasonable defaults to tune once this is
 // actually being played rather than guessed at.
 const SPAWN_FADE_MS = 450;
@@ -73,6 +80,10 @@ export function pickWeightedBird(pool, weights = DEFAULT_RARITY_WEIGHTS, random 
     if (roll <= 0) return def;
   }
   return weighted[weighted.length - 1].def; // floating-point fallback
+}
+
+export function shouldRerollFlee(rarity, random = Math.random) {
+  return random() < (FLEE_REROLL_CHANCES[rarity] ?? 0);
 }
 
 /**
@@ -242,7 +253,13 @@ export function createBirdSpawner({
           el.classList.add('is-fleeing');
           startFrameCycle();
 
-          runTimer(() => fsm.transition(BIRD_STATES.HIDDEN), FLEE_ANIMATION_MS);
+          const reroll = shouldRerollFlee(def.rarity, random);
+
+          runTimer(() => {
+            fsm.transition(
+              reroll ? BIRD_STATES.DESPAWNED : BIRD_STATES.HIDDEN
+            );
+          }, FLEE_ANIMATION_MS);
         },
 
         [BIRD_STATES.HIDDEN]() {
