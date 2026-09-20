@@ -11,47 +11,131 @@ const projectRoot = path.resolve(__dirname, '..');
 
 const birds = [
   {
-    name: 'Mourning Dove',
-    speciesName: 'Mourning Dove',
-    rarity: 'basic',
-    assetDirectory: 'mourning-dove',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
-  },
-  {
-    name: 'Northern Cardinal',
-    speciesName: 'Northern Cardinal',
-    rarity: 'basic',
-    assetDirectory: 'northern-cardinal',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
-  },
-  {
-    name: 'Grackle',
-    speciesName: 'Common Grackle',
-    rarity: 'basic',
-    assetDirectory: 'grackle',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
-  },
-  {
-    name: 'Great Blue Heron',
-    speciesName: 'Great Blue Heron',
+    name: 'Acadian Flycatcher',
+    speciesName: 'Acadian Flycatcher',
     rarity: 'rare',
-    assetDirectory: 'great-blue-heron',
+    assetDirectory: 'acadian-flycatcher',
     frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
   },
   {
-    name: 'Red Bellied Woodpecker',
-    speciesName: 'Red Bellied Woodpecker',
+    name: 'American Crow',
+    speciesName: 'American Crow',
+    rarity: 'basic',
+    assetDirectory: 'american-crow',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'American Redstart',
+    speciesName: 'American Redstart',
+    rarity: 'rare',
+    assetDirectory: 'american-redstart',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Barred Owl',
+    speciesName: 'Barred Owl',
     rarity: 'legendary',
-    assetDirectory: 'red-bellied-woodpecker',
+    assetDirectory: 'barred-owl',
     frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
   },
   {
-    name: 'Tufted Titmouse',
-    speciesName: 'Tufted Titmouse',
+    name: 'Bells Vireo',
+    speciesName: 'Bells Vireo',
     rarity: 'epic',
-    assetDirectory: 'tufted-titmouse',
+    assetDirectory: 'bells-vireo',
     frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
-  }
+  },
+  {
+    name: 'Carolina Wren',
+    speciesName: 'Carolina Wren',
+    rarity: 'basic',
+    assetDirectory: 'carolina-wren',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Coopers Hawk',
+    speciesName: 'Coopers Hawk',
+    rarity: 'rare',
+    assetDirectory: 'coopers-hawk',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Eastern Bluebird',
+    speciesName: 'Eastern Bluebird',
+    rarity: 'basic',
+    assetDirectory: 'eastern-bluebird',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'House Finch',
+    speciesName: 'House Finch',
+    rarity: 'basic',
+    assetDirectory: 'house-finch',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'House Sparrow',
+    speciesName: 'House Sparrow',
+    rarity: 'basic',
+    assetDirectory: 'house-sparrow',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Killdeer',
+    speciesName: 'Killdeer',
+    rarity: 'rare',
+    assetDirectory: 'killdeer',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Magnolia Warbler',
+    speciesName: 'Magnolia Warbler',
+    rarity: 'rare',
+    assetDirectory: 'magnolia-warbler',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Northern Mockingbird',
+    speciesName: 'Northern Mockingbird',
+    rarity: 'basic',
+    assetDirectory: 'northern-mockingbird',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Northern Parula',
+    speciesName: 'Northern Parula',
+    rarity: 'basic',
+    assetDirectory: 'northern-parula',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Northern Waterthrush',
+    speciesName: 'Northern Waterthrush',
+    rarity: 'epic',
+    assetDirectory: 'northern-waterthrush',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Pectoral Sandpiper',
+    speciesName: 'Pectoral Sandpiper',
+    rarity: 'rare',
+    assetDirectory: 'pectoral-sandpiper',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'White Ibis',
+    speciesName: 'White Ibis',
+    rarity: 'epic',
+    assetDirectory: 'white-ibis',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
+  {
+    name: 'Yellow Crowned Night Heron',
+    speciesName: 'Yellow Crowned Night Heron',
+    rarity: 'legendary',
+    assetDirectory: 'yellow-crowned-night-heron',
+    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+  },
 ];
 
 function readPngDimensions(buffer) {
