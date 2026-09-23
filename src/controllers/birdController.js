@@ -16,14 +16,21 @@ export async function listAvailableBirds(req, res) {
         }
       ]
     })
-      .select('_id name speciesName frames scaleRange rarity')
+      .select('_id name speciesName physicalDescription breedingRegion size food habitat song funFact imageUrl scaleRange rarity')
       .lean();
 
     const birdPayload = birds.map((bird) => ({
       id: bird._id.toString(),
       name: bird.name,
       speciesName: bird.speciesName,
-      frames: bird.frames,
+      physicalDescription: bird.physicalDescription,
+      breedingRegion: bird.breedingRegion,
+      size: bird.size,
+      food: bird.food,
+      habitat: bird.habitat,
+      song: bird.song,
+      funFact: bird.funFact,
+      imageUrl: bird.imageUrl,
       scaleRange: bird.scaleRange,
       rarity: bird.rarity
     }));

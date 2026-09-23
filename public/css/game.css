@@ -100,14 +100,14 @@
 
 .bird-sprite.is-spawning,
 .bird-sprite.is-reappearing {
-  animation: bird-arrive 1000ms ease-out forwards;
+  animation: bird-arrive 500ms ease-out forwards;
 }
 
 @keyframes bird-arrive {
   from {
     opacity: 0;
     transform:
-      translate(calc(-50% + 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
+      translate(calc(-50% + 60px), calc(-50% - 30px)) scale(var(--bird-scale, 1));
   }
 
   to {
@@ -132,7 +132,7 @@
   to {
     opacity: 0;
     transform:
-      translate(calc(-50% - 120px), calc(-50% - 60px)) scale(var(--bird-scale, 1));
+      translate(calc(-50% - 60px), calc(-50% - 30px)) scale(var(--bird-scale, 1));
   }
 }
 
@@ -141,12 +141,11 @@
   cursor: default;
 }
 
-.bird-frame {
+.bird-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
   pointer-events: none;
-  /* clicks land on .bird-sprite, not the <img> itself */
   user-select: none;
 }
 

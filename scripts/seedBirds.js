@@ -12,129 +12,181 @@ const projectRoot = path.resolve(__dirname, '..');
 const birds = [
   {
     name: 'Acadian Flycatcher',
-    speciesName: 'Acadian Flycatcher',
+    scientificName: 'Empidonax virescens',
     rarity: 'rare',
-    assetDirectory: 'acadian-flycatcher',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'acadian-flycatcher.png',
+    physicalDescription: "Big peaked head and relatively long bill. Greenish-olive above and pale whitish below. Thin white eyering and very long wingtips.",
+    breedingRegion: "Eastern North America's deciduous and mixed forests, stretching from the eastern Great Plains and Gulf Coast up to southern New England.",
+    size: "5.5 in",
+    food: "Insects, berries, seeds",
+    habitat: "mature, shaded deciduous forests and wooded ravines.",
+    song: "pwit-SIP!, pweek!",
+    funFact: "The Acadian flycatcher can hover and fly backward.",
   },
   {
     name: 'American Crow',
     speciesName: 'American Crow',
     rarity: 'basic',
-    assetDirectory: 'american-crow',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'american-crow.png'
   },
   {
     name: 'American Redstart',
     speciesName: 'American Redstart',
     rarity: 'rare',
-    assetDirectory: 'american-redstart',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'american-redstart.png'
   },
   {
     name: 'Barred Owl',
     speciesName: 'Barred Owl',
     rarity: 'legendary',
-    assetDirectory: 'barred-owl',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'barred-owl.png'
   },
   {
     name: 'Bells Vireo',
     speciesName: 'Bells Vireo',
     rarity: 'epic',
-    assetDirectory: 'bells-vireo',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'bells-vireo.png'
   },
   {
     name: 'Carolina Wren',
     speciesName: 'Carolina Wren',
     rarity: 'basic',
-    assetDirectory: 'carolina-wren',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'carolina-wren.png'
   },
   {
     name: 'Coopers Hawk',
     speciesName: 'Coopers Hawk',
     rarity: 'rare',
-    assetDirectory: 'coopers-hawk',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'coopers-hawk.png'
   },
   {
     name: 'Eastern Bluebird',
     speciesName: 'Eastern Bluebird',
     rarity: 'basic',
-    assetDirectory: 'eastern-bluebird',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'eastern-bluebird.png'
+  },
+  {
+    name: 'Grackle',
+    speciesName: 'Grackle',
+    rarity: 'basic',
+    imageName: 'grackle.png'
+  },
+  {
+    name: 'Great Blue Heron',
+    speciesName: 'Great Blue Heron',
+    rarity: 'rare',
+    imageName: 'great-blue-heron.png'
   },
   {
     name: 'House Finch',
     speciesName: 'House Finch',
     rarity: 'basic',
-    assetDirectory: 'house-finch',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'house-finch.png'
   },
   {
     name: 'House Sparrow',
     speciesName: 'House Sparrow',
     rarity: 'basic',
-    assetDirectory: 'house-sparrow',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'house-sparrow.png'
   },
   {
     name: 'Killdeer',
     speciesName: 'Killdeer',
     rarity: 'rare',
-    assetDirectory: 'killdeer',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'killdeer.png'
   },
   {
     name: 'Magnolia Warbler',
     speciesName: 'Magnolia Warbler',
     rarity: 'rare',
-    assetDirectory: 'magnolia-warbler',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'magnolia-warbler.png'
+  },
+  {
+    name: 'Mourning Dove',
+    speciesName: 'Mourning Dove',
+    rarity: 'basic',
+    imageName: 'mourning-dove.png'
+  },
+  {
+    name: 'Northern Cardinal',
+    speciesName: 'Northern Cardinal',
+    rarity: 'basic',
+    imageName: 'northern-cardinal.png'
   },
   {
     name: 'Northern Mockingbird',
     speciesName: 'Northern Mockingbird',
     rarity: 'basic',
-    assetDirectory: 'northern-mockingbird',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'northern-mockingbird.png'
   },
   {
     name: 'Northern Parula',
     speciesName: 'Northern Parula',
     rarity: 'basic',
-    assetDirectory: 'northern-parula',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'northern-parula.png'
   },
   {
     name: 'Northern Waterthrush',
     speciesName: 'Northern Waterthrush',
     rarity: 'epic',
-    assetDirectory: 'northern-waterthrush',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'northern-waterthrush.png'
   },
   {
     name: 'Pectoral Sandpiper',
     speciesName: 'Pectoral Sandpiper',
     rarity: 'rare',
-    assetDirectory: 'pectoral-sandpiper',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'pectoral-sandpiper.png'
+  },
+  {
+    name: 'Red-bellied Woodpecker',
+    speciesName: 'Red-bellied Woodpecker',
+    rarity: 'basic',
+    imageName: 'red-bellied-woodpecker.png'
+  },
+  {
+    name: 'Tufted Titmouse',
+    speciesName: 'Tufted Titmouse',
+    rarity: 'basic',
+    imageName: 'tufted-titmouse.png'
   },
   {
     name: 'White Ibis',
     speciesName: 'White Ibis',
     rarity: 'epic',
-    assetDirectory: 'white-ibis',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'white-ibis.png'
   },
   {
     name: 'Yellow Crowned Night Heron',
     speciesName: 'Yellow Crowned Night Heron',
     rarity: 'legendary',
-    assetDirectory: 'yellow-crowned-night-heron',
-    frames: ['sitting.png', 'flight_up.png', 'flight_down.png']
+    imageName: 'yellow-crowned-night-heron.png'
+  },
+  {
+    name: 'Clarks Nutcracker',
+    rarity: 'basic'
+
+  },
+  {
+    name: 'Blue Eyed Ground Dove',
+    rarity: 'legendary',
+  },
+  {
+    name: 'Northern Shoveler',
+    rarity: 'basic'
+
+  },
+  {
+    name: 'Piping Plover',
+    rarity: 'epic'
+  },
+  {
+    name: 'Lark Sparrow',
+    rarity: 'basic'
+
+  },
+  {
+    name: 'Southern Lapwing',
+    rarity: 'rare'
   },
 ];
 
@@ -151,21 +203,9 @@ function readPngDimensions(buffer) {
   };
 }
 
-async function getImageMeta(filePaths) {
-  const dimensions = [];
-
-  for (const filePath of filePaths) {
-    const buffer = await fs.readFile(filePath);
-    dimensions.push(readPngDimensions(buffer));
-  }
-
-  const [{ width, height }] = dimensions;
-
-  // for (const dimension of dimensions) {
-  //   if (dimension.width !== width || dimension.height !== height) {
-  //     throw new Error('All animation frames must have matching dimensions');
-  //   }
-  // }
+async function getImageMeta(filePath) {
+  const buffer = await fs.readFile(filePath);
+  const { width, height } = readPngDimensions(buffer);
 
   return {
     width,
@@ -178,23 +218,16 @@ async function seedBirds() {
   await mongoose.connect(process.env.MONGODB_URI);
 
   for (const bird of birds) {
-    const assetDirectory = path.join(
+    const imagePath = path.join(
       projectRoot,
       'public',
       'assets',
       'birds',
-      bird.assetDirectory
+      bird.imageName
     );
 
-    const assetPaths = bird.frames.map((frame) =>
-      path.join(assetDirectory, frame)
-    );
-
-    const imageMeta = await getImageMeta(assetPaths);
-
-    const frames = bird.frames.map(
-      (frame) => `/assets/birds/${bird.assetDirectory}/${frame}`
-    );
+    const imageMeta = await getImageMeta(imagePath);
+    const imageUrl = `/assets/birds/${bird.imageName}`;
 
     await Bird.findOneAndUpdate(
       {
@@ -207,7 +240,14 @@ async function seedBirds() {
           ownerId: null,
           name: bird.name,
           speciesName: bird.speciesName,
-          frames,
+          physicalDescription: bird.physicalDescription,
+          breedingRegion: bird.breedingRegion,
+          size: bird.size,
+          food: bird.food,
+          habitat: bird.habitat,
+          song: bird.song,
+          funFact: bird.funFact,
+          imageUrl,
           imageMeta,
           rarity: bird.rarity,
           visibility: 'approved',

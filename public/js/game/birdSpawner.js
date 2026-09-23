@@ -30,7 +30,6 @@ const FLEE_REROLL_CHANCES = {
 // Timing constants (ms) — reasonable defaults to tune once this is
 // actually being played rather than guessed at.
 const SPAWN_FADE_MS = 450;
-const FRAME_INTERVAL_MS = 100;
 const FLEE_ANIMATION_MS = 500;
 const HIDDEN_MIN_MS = 400;
 const HIDDEN_MAX_MS = 1200;
@@ -42,20 +41,6 @@ const FLEE_DELAY_MAX_MS = 6000;
 const PLACEMENT_MARGIN_PCT = 8;
 
 let nextInstanceId = 1;
-
-/**
- * Frame contract for a bird definition's `frames` array: frames[0] is the
- * resting/sitting pose (shown whenever the bird is landed/visible);
- * everything after it is a flap/transition cycle played only while the
- * bird is arriving (see startFrameCycle in createBirdSpawner). A bird
- * with only one frame just has no flap animation — it appears and sits.
- */
-function restFrame(def) {
-  return def.frames[0];
-}
-function flapFrames(def) {
-  return def.frames.length > 1 ? def.frames.slice(1) : [def.frames[0]];
-}
 
 /**
  * Picks one bird definition from `pool`, weighted by `weights[def.rarity]`
@@ -91,7 +76,7 @@ export function shouldRerollFlee(rarity, random = Math.random) {
  * @param {{getBirdLayer:(depth:number)=>HTMLElement, birdLayers:HTMLElement[]}} options.scene
  *   the handle returned by renderer.js's renderScene()/mountScene().
  * @param {{birdDensity:number, birdDistanceRange:{min:number,max:number}, fleeEnabled:boolean}} options.levelConfig
- * @param {Array<{id:string,name?:string,frames:string[],rarity:string}>} options.birdPool
+ * @param {Array<{id:string,name?:string,imageUrl:string,rarity:string}>} options.birdPool
  *   candidate birds to spawn from — see file header for shape/source.
  * @param {(caught: {instanceId:number, bird:object, depth:number, scale:number}) => void} [options.onCatch]
  *   fired when a bird is clicked. Scoring/coins live outside this module
@@ -150,8 +135,8 @@ export function createBirdSpawner({
     placeRandomly(el);
 
     const img = document.createElement('img');
-    img.className = 'bird-frame';
-    img.src = restFrame(def); // overwritten synchronously by startFrameCycle() below; just a sane pre-mount default
+    img.className = 'bird-image';
+    img.src = def.imageUrl;
     img.draggable = false;
     img.alt = def.name ?? 'bird';
     el.appendChild(img);
@@ -173,37 +158,6 @@ export function createBirdSpawner({
       timers.clear();
     }
 
-    // Frame contract: frames[0] is the resting/sitting pose; anything
-    // after it is a flap/transition cycle (e.g. wings up, wings down)
-    // played only while the bird is arriving (spawning). A bird with no
-    // extra frames just shows its rest pose the whole time — no crash,
-    // no animation.
-    let frameTimer = null;
-    function stopFrameCycle({ settleOnRest = false } = {}) {
-      if (frameTimer != null) {
-        scheduler.clearTimeout(frameTimer);
-        timers.delete(frameTimer);
-        frameTimer = null;
-      }
-      if (settleOnRest) img.src = restFrame(def);
-    }
-    function startFrameCycle() {
-      const flaps = flapFrames(def);
-
-      if (flaps.length <= 1) {
-        img.src = flaps[0];
-        return;
-      }
-      let i = 0;
-      const tick = () => {
-        img.src = flaps[i];
-        i = (i + 1) % flaps.length;
-        frameTimer = runTimer(tick, FRAME_INTERVAL_MS);
-      };
-
-      tick();
-    }
-
     function placeRandomly(target) {
       const x = rand(PLACEMENT_MARGIN_PCT, 100 - PLACEMENT_MARGIN_PCT);
       const y = rand(PLACEMENT_MARGIN_PCT, 100 - PLACEMENT_MARGIN_PCT);
@@ -220,7 +174,6 @@ export function createBirdSpawner({
       onEnter: {
         [BIRD_STATES.SPAWNING]() {
           el.classList.add('is-spawning');
-          startFrameCycle();
           runTimer(() => fsm.transition(BIRD_STATES.VISIBLE), SPAWN_FADE_MS);
         },
 
@@ -230,14 +183,10 @@ export function createBirdSpawner({
 
           if (from === BIRD_STATES.HIDDEN) {
             el.classList.add('is-reappearing');
-            startFrameCycle();
 
             runTimer(() => {
               el.classList.remove('is-reappearing');
-              stopFrameCycle({ settleOnRest: true });
             }, SPAWN_FADE_MS);
-          } else {
-            stopFrameCycle({ settleOnRest: true });
           }
 
           if (fleeEnabled) {
@@ -251,7 +200,6 @@ export function createBirdSpawner({
         [BIRD_STATES.FLEEING]() {
           el.classList.remove('is-visible');
           el.classList.add('is-fleeing');
-          startFrameCycle();
 
           const reroll = shouldRerollFlee(def.rarity, random);
 
@@ -263,7 +211,6 @@ export function createBirdSpawner({
         },
 
         [BIRD_STATES.HIDDEN]() {
-          stopFrameCycle();
           el.classList.remove('is-fleeing');
           el.classList.add('is-hidden');
           placeRandomly(el);
@@ -275,7 +222,6 @@ export function createBirdSpawner({
         },
 
         [BIRD_STATES.CLICKED]() {
-          stopFrameCycle();
           clearTimers();
           el.classList.remove('is-spawning', 'is-reappearing', 'is-fleeing');
           el.removeEventListener('click', onClick);
@@ -285,7 +231,6 @@ export function createBirdSpawner({
         },
 
         [BIRD_STATES.DESPAWNED]() {
-          stopFrameCycle();
           clearTimers();
           el.remove();
           active.delete(instanceId);
@@ -337,10 +282,6 @@ export const DEV_FIXTURE_BIRD_POOL = [
     id: 'dev-1',
     name: 'Mourning Dove',
     rarity: 'basic',
-    frames: [
-      '/assets/birds/mourning-dove/sitting.png',     // frames[0] = rest pose
-      '/assets/birds/mourning-dove/flight_up.png',   // frames[1:] = flap cycle
-      '/assets/birds/mourning-dove/flight_down.png'
-    ]
+    imageUrl: '/assets/birds/mourning-dove.png'
   }
 ];
