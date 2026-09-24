@@ -17,6 +17,12 @@
   padding: 22px 28px 10px;
 }
 
+.menu-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .menu-brand {
   display: flex;
   flex-direction: column;
@@ -394,4 +400,60 @@
   border-top: 1px dashed rgba(166, 156, 124, 0.9);
   margin: 4px 0;
   padding: 0;
+}
+
+/* ---------------------------------------------------------------
+   Modal (Field Guide launcher — #39)
+   Mounted into #modal-root, above every view. The backdrop is --ink
+   (#202a1f) at 0.8 opacity; the card holds the 'large' Field Guide, whose
+   own 6px pine frame and page colors come from game.css (#40).
+   ----------------------------------------------------------------*/
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(32, 42, 31, 0.8);
+  overscroll-behavior: contain;
+}
+
+.modal-card {
+  position: relative;
+  width: min(980px, 100%);
+}
+
+.modal-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--pine-dark);
+  background: var(--card);
+  border: 2px solid var(--pine);
+  border-radius: 50%;
+  font: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: var(--paper);
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (max-width: 500px) {
+  .menu-topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 }

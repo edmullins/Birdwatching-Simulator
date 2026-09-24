@@ -7,6 +7,11 @@
 //
 //   spawning -> visible -> [fleeing -> hidden -> visible] -> visible -> clicked -> despawned
 //
+// Birds are collected by TYPING their name, not by clicking them:
+// attemptCatch(text) (see below) is called by views/level.js when the
+// player submits the name textbox. The `clicked` state name is kept from
+// the design doc — it now just means "caught".
+//
 // When a bird despawns (caught), a replacement spawns automatically so
 // the level stays at `birdDensity` concurrent birds until stop()/destroy().
 // ---------------------------------------------------------------------
@@ -21,10 +26,10 @@ const DEFAULT_RARITY_WEIGHTS = {
 };
 
 const FLEE_REROLL_CHANCES = {
-  basic: 0.5,
-  rare: 0.6,
-  epic: 0.75,
-  legendary: 0.9
+  basic: 0.1,
+  rare: 0.2,
+  epic: 0.3,
+  legendary: 0.5
 };
 
 // Timing constants (ms) — reasonable defaults to tune once this is
@@ -33,14 +38,25 @@ const SPAWN_FADE_MS = 450;
 const FLEE_ANIMATION_MS = 500;
 const HIDDEN_MIN_MS = 400;
 const HIDDEN_MAX_MS = 1200;
-const FLEE_DELAY_MIN_MS = 2500; // how long a bird sits visible before it may flee
-const FLEE_DELAY_MAX_MS = 6000;
+const FLEE_DELAY_MIN_MS = 5000; // how long a bird sits visible before it may flee
+const FLEE_DELAY_MAX_MS = 10000;
 
 // Sprites are placed with a margin so they don't spawn clipped at the
 // very edge of the scene.
 const PLACEMENT_MARGIN_PCT = 8;
 
 let nextInstanceId = 1;
+
+/**
+ * How a typed guess and a bird's name are compared: trimmed, upper-cased.
+ * Nothing else is normalized — "Red-bellied Woodpecker" must be typed with
+ * its hyphen. Exported so the level view and tests use the exact same rule.
+ */
+export function normalizeGuess(value) {
+  return String(value ?? '')
+    .toUpperCase()
+    .replace(/[-\s]/g, '');
+}
 
 /**
  * Picks one bird definition from `pool`, weighted by `weights[def.rarity]`
@@ -79,8 +95,9 @@ export function shouldRerollFlee(rarity, random = Math.random) {
  * @param {Array<{id:string,name?:string,imageUrl:string,rarity:string}>} options.birdPool
  *   candidate birds to spawn from — see file header for shape/source.
  * @param {(caught: {instanceId:number, bird:object, depth:number, scale:number}) => void} [options.onCatch]
- *   fired when a bird is clicked. Scoring/coins live outside this module
- *   (design doc's economy is a separate concern) — this is just the hook.
+ *   fired when a bird is caught by name. Scoring/coins live outside this
+ *   module (design doc's economy is a separate concern) — this is just
+ *   the hook.
  * @param {Record<string, number>} [options.rarityWeights] - override spawn odds.
  * @param {() => number} [options.random] - injectable RNG; tests use this for determinism.
  * @param {{setTimeout: Function, clearTimeout: Function}} [options.scheduler]
@@ -109,7 +126,7 @@ export function createBirdSpawner({
   const distanceRange = levelConfig?.birdDistanceRange ?? { min: 1, max: 1 };
   const fleeEnabled = Boolean(levelConfig?.fleeEnabled);
 
-  const active = new Map(); // instanceId -> { el, clearTimers, onClick }
+  const active = new Map(); // instanceId -> { def, fsm, el, clearTimers }
   let running = false;
 
   function rand(min, max) {
@@ -163,10 +180,6 @@ export function createBirdSpawner({
       const y = rand(PLACEMENT_MARGIN_PCT, 100 - PLACEMENT_MARGIN_PCT);
       target.style.left = `${x}%`;
       target.style.top = `${y}%`;
-    }
-
-    function onClick() {
-      fsm.transition(BIRD_STATES.CLICKED);
     }
 
     const fsm = createBirdStateMachine({
@@ -224,7 +237,6 @@ export function createBirdSpawner({
         [BIRD_STATES.CLICKED]() {
           clearTimers();
           el.classList.remove('is-spawning', 'is-reappearing', 'is-fleeing');
-          el.removeEventListener('click', onClick);
 
           onCatch({ instanceId, bird: def, depth, scale });
           fsm.transition(BIRD_STATES.DESPAWNED);
@@ -242,8 +254,7 @@ export function createBirdSpawner({
       }
     });
 
-    el.addEventListener('click', onClick);
-    active.set(instanceId, { el, clearTimers, onClick });
+    active.set(instanceId, { def, fsm, el, clearTimers });
   }
 
   return {
@@ -260,12 +271,34 @@ export function createBirdSpawner({
     /** Removes every active bird and cancels all pending timers immediately. */
     destroy() {
       running = false;
-      active.forEach(({ el, clearTimers, onClick }) => {
+      active.forEach(({ el, clearTimers }) => {
         clearTimers();
-        el.removeEventListener('click', onClick);
         el.remove();
       });
       active.clear();
+    },
+    /**
+     * Tries to collect a bird by name. Matches the first bird that is
+     * currently `visible` (not spawning, fleeing, or hidden) whose name
+     * equals the guess after trim() + toUpperCase(). If two birds of the
+     * same species are up, the older one is caught.
+     *
+     * @param {string} rawGuess - whatever the player typed.
+     * @returns {{name: string, rarity: string}|null} the caught bird, or
+     *   null if nothing visible matched (wrong name, empty guess, or the
+     *   bird flew off / hasn't finished fading in yet).
+     */
+    attemptCatch(rawGuess) {
+      const guess = normalizeGuess(rawGuess);
+      if (!guess) return null;
+
+      for (const { def, fsm } of active.values()) {
+        if (fsm.state !== BIRD_STATES.VISIBLE) continue;
+        if (normalizeGuess(def.name) !== guess) continue;
+        // transition() runs onEnter[CLICKED] -> onCatch(...) -> despawn.
+        return fsm.transition(BIRD_STATES.CLICKED) ? def : null;
+      }
+      return null;
     },
     /** Number of birds currently alive (spawning/visible/fleeing/hidden). */
     get activeCount() {

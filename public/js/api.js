@@ -57,5 +57,8 @@ export const api = {
 
   getLeaderboard: (limit) => request(`/leaderboard${limit ? `?limit=${limit}` : ''}`),
 
-  getBirds: () => request('/birds')
+  getBirds: () => request('/birds'),
+
+  // Field Guide catalog: strictly approved birds, same for every player.
+  getFieldGuideBirds: () => request('/birds?visibility=approved')
 };

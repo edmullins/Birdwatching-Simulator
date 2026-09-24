@@ -1,18 +1,21 @@
 // public/js/game/input.js
 //
 // ---------------------------------------------------------------------
-// This issue's other checkbox — click detection with slightly-larger-
-// than-visual hitboxes — already exists: game/birdSpawner.js (#12) gives
-// every .bird-sprite its own click listener, and game.css pads each
-// sprite's clickable box beyond its drawn image (design doc §3). A 
-// second, centralized click handler on top of it would just be two
-// systems racing over the same clicks. This file is the spacebar/zoom
-// half only.
+// Birds are no longer collected by clicking - the player types a bird's
+// name into the textbox in views/level.js, and game/birdSpawner.js's
+// attemptCatch() checks it. So this file is the spacebar/zoom half only.
+//
+// Space vs. the name textbox: names contain spaces ("Northern Cardinal"),
+// but Space is also the zoom key. The rule, in one line: while the textbox
+// has text in it, Space types a space; otherwise (empty box, or focus
+// somewhere else) Space zooms. A zoom that started on an empty box keeps
+// swallowing Space until it's released, so a held zoom never types spaces
+// into a name you start typing mid-zoom.
 // ---------------------------------------------------------------------
 //
 // Wires game/renderer.js's scene handle together with
 // components/binocularMask.js: holding Space zooms in (CSS-scale, no
-// asset reload, per design doc §3), releasing it zooms back out.
+// asset reload, per design doc #3), releasing it zooms back out.
 
 import { createBinocularMask } from '../components/binocularMask.js';
 
@@ -30,7 +33,7 @@ import { createBinocularMask } from '../components/binocularMask.js';
 export function attachLevelInput({
   sceneHost,
   scene,
-  zoomMultiplier = 2,
+  zoomMultiplier = 3,
   onZoomChange = () => {},
   eventTarget = window
 }) {
@@ -40,6 +43,13 @@ export function attachLevelInput({
 
   const mask = createBinocularMask({ container: sceneHost, target: scene.root, zoomMultiplier });
   let zoomed = false;
+
+  function isTextEntry(target) {
+    return (
+      target instanceof HTMLElement &&
+      (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+    );
+  }
 
   function isSpacebar(event) {
     // event.code is preferred (layout-independent); event.key covers
@@ -55,7 +65,16 @@ export function attachLevelInput({
   }
 
   function handleKeydown(event) {
-    if (!isSpacebar(event) || zoomed) return; // ignore held-key repeat events
+    if (!isSpacebar(event)) return;
+    if (zoomed) {
+      // Held-key repeat: already zooming. Still swallow it so it can't
+      // type spaces into the name textbox while Space is held down.
+      event.preventDefault();
+      return;
+    }
+    // Mid-name in the textbox: this Space is part of the name.
+    if (isTextEntry(event.target) && event.target.value.trim() !== '') return;
+
     event.preventDefault(); // Space's default action scrolls the page
     zoomed = true;
     mask.setZoomed(true);
@@ -64,7 +83,7 @@ export function attachLevelInput({
   }
 
   function handleKeyup(event) {
-    if (!isSpacebar(event)) return;
+    if (!isSpacebar(event) || !zoomed) return; // a Space typed into the name box
     event.preventDefault();
     zoomed = false;
     mask.setZoomed(false);

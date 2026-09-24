@@ -19,19 +19,19 @@ function pointsForRarity(rarity) {
 
 // src/models/bird.js
 //
-// Issue #18 (starting point) — first real schema for design doc §5/§8's
+// Issue #18 (starting point) - first real schema for design doc §5/§8's
 // `birds` collection. Was an empty stub file before this;
 //
 // Known follow-ups this does NOT attempt to solve:
-//   - No birds catalog endpoint (GET /api/birds?visibility=approved) —
+//   - No birds catalog endpoint (GET /api/birds?visibility=approved) -
 //     public/js/game/birdSpawner.js still runs off DEV_FIXTURE_BIRD_POOL.
 //   - No admin review controller/routes for the submitted -> approved /
 //     rejected flow described in §5, though `visibility` here is shaped
 //     to support it directly.
 //   - Run.birdsFound (src/models/run.js) still expects real Bird
-//     ObjectIds but nothing populates them yet — level.js sends `[]`.
+//     ObjectIds but nothing populates them yet - level.js sends `[]`.
 //   - "Global bounds" for scaleRange / image dimensions are listed as
-//     TBD in the design doc's Open Questions — enforce those at the
+//     TBD in the design doc's Open Questions - enforce those at the
 //     upload controller once it exists; this schema only checks
 //     internal consistency (min <= max), not the as-yet-undefined
 //     global ceiling.
@@ -75,7 +75,7 @@ const careSchema = new mongoose.Schema(
 const licenseSchema = new mongoose.Schema(
   {
     source: { type: String, required: true, maxlength: 60},          // e.g. "USFWS National Digital Library"
-    sourceUrl: { type: String, required: true, maxlength: 60},
+    sourceUrl: { type: String, required: true, maxlength: 300},
     licenseType: { type: String, required: true, maxlength: 60},     // "public-domain" | "cc0" | "cc-by" | "original"
     attributionText: { type: String, required: false, maxlength: 150} // This work is an adaptation of '[Title of Work]' by [Author Name], used under CC BY 4.0. Changes include [briefly describe changes].
   },
@@ -114,6 +114,8 @@ const birdSchema = new mongoose.Schema(
       maxlength: 60,
     },
 
+    // --- Field Guide content (#37). Text-only; caps keep the two-page
+    // spread in components/fieldGuide.js from being blown out. ---
     physicalDescription: {
       type: String,
       required: true,
@@ -125,7 +127,7 @@ const birdSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 60,
+      maxlength: 200,
     },
 
     size: {
@@ -139,21 +141,21 @@ const birdSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 60,
+      maxlength: 120,
     },
 
     habitat: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 60,
+      maxlength: 120,
     },
 
     song: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 60,
+      maxlength: 120,
     },
 
     funFact: {

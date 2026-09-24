@@ -40,7 +40,7 @@ export function getLevelConfig(levelNumber) {
 
   return {
     levelNumber,
-    minBirdsRequired: Math.floor(progress + (progress / 2)),
+    minBirdsRequired: progress + 1,
     birdDistanceRange: {
       min: Math.round(Math.max(0.25, 0.9 - progress * 0.02) * 100) / 100,
       max: Math.round(Math.max(0.75, 1.8 - progress * 0.03) * 100) / 100

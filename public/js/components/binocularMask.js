@@ -70,16 +70,16 @@ export function createBinocularMask({ container, target, zoomMultiplier = 2 }) {
 
     const LENS_WIDTH_RATIO = 0.35;
     const LENS_HEIGHT_RATIO = 0.45;
-    
+
     const mouseX = clientX - rect.left;
     const mouseY = clientY - rect.top;
     const lensWidth = w * LENS_WIDTH_RATIO;
     const lensHeight = h * LENS_HEIGHT_RATIO;
-    const maxPanX = Math.max(0, (w * currentMultiplier - lensWidth) / 2);
-    const maxPanY = Math.max(0, (h * currentMultiplier - lensHeight) / 2);
+    const maxPanX = Math.max(0, (w * (currentMultiplier - 1)) / 2);
+    const maxPanY = Math.max(0, (h * (currentMultiplier - 1)) / 2);
 
-    const panX = clamp(w / 2 - mouseX, -maxPanX, maxPanX);
-    const panY = clamp(h / 2 - mouseY, -maxPanY, maxPanY);
+    const panX = clamp((w / 2 - mouseX) * currentMultiplier, -maxPanX, maxPanX);
+    const panY = clamp((h / 2 - mouseY) * currentMultiplier, -maxPanY, maxPanY);
 
     target.style.setProperty('--pan-x', `${panX}px`);
     target.style.setProperty('--pan-y', `${panY}px`);

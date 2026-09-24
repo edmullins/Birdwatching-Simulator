@@ -1,3 +1,12 @@
+/* Rarity colors used by the Field Guide chips and the round-summary tiers.
+   Text always carries the rarity name too — color is never the only cue. */
+:root {
+  --rarity-basic: #6f664c;
+  --rarity-rare: var(--pine);
+  --rarity-epic: #5b4a7a;
+  --rarity-legendary: var(--gold);
+}
+
 .level-scene {
   min-height: 100vh;
   padding: 32px 24px;
@@ -58,16 +67,14 @@
   background-size: contain;
 }
 
-/* Occlusion + bird layers never intercept clicks themselves — only the
-   bird sprites birdSpawner.js (#12) appends inside a bird layer should
-   be clickable, so it sets pointer-events back to 'auto' per sprite. */
+/* Occlusion + bird layers never intercept the pointer. Birds are collected
+   by typing their name (views/level.js), not by clicking, so sprites are
+   pointer-transparent too — nothing in the scene should swallow a click
+   meant for the page underneath. */
 .scene-occlusion-layer,
-.scene-bird-layer {
-  pointer-events: none;
-}
-
+.scene-bird-layer,
 .scene-bird-layer>* {
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 /* ---------------------------------------------------------------
@@ -83,7 +90,6 @@
   height: 64px;
   transform: translate(-50%, -50%) scale(var(--bird-scale, 1));
   transform-origin: center;
-  cursor: url('../assets/icons/search_icon.svg'), pointer;
   opacity: 0;
   transition: opacity 300ms ease;
   display: flex;
@@ -230,7 +236,7 @@
 }
 
 .summary-card {
-  width: min(100%, 620px);
+  width: min(100%, 720px);
   padding: 36px 30px;
   color: var(--ink);
   background: rgba(241, 236, 217, 0.94);
@@ -309,5 +315,431 @@
 
   .summary-stat-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Shared scroll container (Field Guide pages, round-summary stacks)
+   App-wide scrollbar look from main.css (--pine at 45%), scoped so each
+   scroller keeps its wheel/touch scrolling to itself (#38, #40).
+   ----------------------------------------------------------------*/
+.field-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(51, 80, 62, 0.45) transparent;
+}
+
+/* Chromium/Safari builds without scrollbar-color support */
+@supports not (scrollbar-color: auto) {
+  .field-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .field-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .field-scroll::-webkit-scrollbar-thumb {
+    background: rgba(51, 80, 62, 0.45);
+    border-radius: 4px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Field Guide (components/fieldGuide.js — #38/#39/#40)
+   A two-page spread inside a 6px dark-green rounded frame. `mini` sits
+   bottom-right in the level; `large` fills the main-menu modal card.
+   z-index 2000 matches .level-hud so it stays above the zoom mask (1000)
+   and the Back button (1100).
+   ----------------------------------------------------------------*/
+.field-guide {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--ink);
+  background: var(--card);
+  border: 6px solid var(--pine);
+  border-radius: 6px;
+  box-shadow: 0 18px 34px -22px rgba(32, 42, 31, 0.65);
+}
+
+.field-guide--mini {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2000;
+  width: min(440px, calc(100% - 32px));
+  height: 250px;
+  font-size: 0.78rem;
+}
+
+.field-guide--large {
+  width: 100%;
+  height: min(640px, 80vh);
+  font-size: 1rem;
+}
+
+.fg-spread {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.fg-page {
+  min-height: 0;
+  padding: 8px 10px;
+  background: var(--card);
+}
+
+.field-guide--large .fg-page {
+  padding: 22px 26px;
+}
+
+.fg-page--left {
+  border-right: 1px solid var(--rule);
+}
+
+.fg-page.can-flip {
+  cursor: pointer;
+}
+
+.fg-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.fg-thumb {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.field-guide--large .fg-thumb {
+  width: 88px;
+  height: 88px;
+}
+
+.fg-titles {
+  min-width: 0;
+}
+
+.fg-name {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.15em;
+  line-height: 1.15;
+}
+
+.field-guide--large .fg-name {
+  font-size: 1.6em;
+}
+
+.fg-scientific {
+  margin: 2px 0 4px;
+  color: rgba(32, 42, 31, 0.65);
+  font-style: italic;
+}
+
+.fg-rarity {
+  display: inline-block;
+  padding: 1px 8px;
+  color: #fff;
+  background: var(--rarity-basic);
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.fg-rarity[data-rarity="rare"] {
+  background: var(--rarity-rare);
+}
+
+.fg-rarity[data-rarity="epic"] {
+  background: var(--rarity-epic);
+}
+
+.fg-rarity[data-rarity="legendary"] {
+  color: var(--ink);
+  background: var(--rarity-legendary);
+}
+
+.fg-fields {
+  margin: 0;
+}
+
+.fg-fields dt {
+  margin-top: 6px;
+  color: var(--pine-dark);
+  font-weight: 700;
+}
+
+.fg-fields dd {
+  margin: 1px 0 0;
+  line-height: 1.4;
+}
+
+.fg-status {
+  margin: 0;
+  color: rgba(32, 42, 31, 0.7);
+}
+
+.fg-toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 8px;
+  color: var(--card);
+  background: var(--pine);
+}
+
+.fg-position {
+  font-size: 0.9em;
+}
+
+.fg-nav {
+  padding: 2px 10px;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(241, 236, 217, 0.55);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.fg-nav:hover:not(:disabled) {
+  background: var(--pine-dark);
+}
+
+.fg-nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.fg-nav:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------
+   Name textbox (views/level.js) — birds are collected by typing.
+   Bottom-left so it stays clear of the mini Field Guide (bottom-right).
+   ----------------------------------------------------------------*/
+.collect-form {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 2000;
+  width: min(340px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.collect-row {
+  display: flex;
+  gap: 8px;
+}
+
+.collect-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  /* placeholder stays sentence case */
+  color: var(--ink);
+  background: var(--card);
+  border: 2px solid var(--pine);
+  border-radius: 4px;
+}
+
+.collect-input::placeholder {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(32, 42, 31, 0.55);
+}
+
+.collect-input:focus-visible {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(185, 146, 46, 0.35);
+}
+
+.collect-input:disabled {
+  opacity: 0.6;
+}
+
+.collect-feedback {
+  margin: 0;
+  padding: 6px 10px;
+  color: var(--card);
+  background: rgba(32, 42, 31, 0.92);
+  border-left: 4px solid var(--rule);
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.collect-feedback:empty {
+  display: none;
+}
+
+.collect-feedback[data-kind="hit"] {
+  border-left-color: #8fbf7a;
+}
+
+.collect-feedback[data-kind="miss"] {
+  border-left-color: #d98a76;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .collect-input.is-miss {
+    animation: collect-shake 260ms ease;
+  }
+}
+
+@keyframes collect-shake {
+
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Not enough width to sit side by side: lift the guide above the textbox. */
+@media (max-width: 820px) {
+  .field-guide--mini {
+    bottom: 96px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Round summary recap (views/roundSummary.js — #41)
+   One row per species, rarest first: sitting image on white, then a
+   fixed-height scrolling stack (name, fun fact, remaining guide fields).
+   ----------------------------------------------------------------*/
+.found-section {
+  margin: 0 0 24px;
+  text-align: left;
+}
+
+.found-heading {
+  margin: 0 0 10px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.15rem;
+}
+
+.found-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.found-row {
+  --tier: var(--rarity-basic);
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 12px;
+  height: 132px;
+  padding: 8px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-left: 6px solid var(--tier);
+  border-radius: var(--radius);
+}
+
+.found-row[data-rarity="rare"] {
+  --tier: var(--rarity-rare);
+}
+
+.found-row[data-rarity="epic"] {
+  --tier: var(--rarity-epic);
+}
+
+.found-row[data-rarity="legendary"] {
+  --tier: var(--rarity-legendary);
+}
+
+.found-logo {
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.found-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.found-stack {
+  min-height: 0;
+  padding-right: 8px;
+}
+
+.found-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.1rem;
+}
+
+.found-count {
+  color: var(--pine);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.found-field {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.found-field-label {
+  display: block;
+  color: var(--pine-dark);
+}
+
+.found-empty {
+  margin: 0;
+  padding: 14px 16px;
+  color: rgba(32, 42, 31, 0.75);
+  background: rgba(231, 225, 204, 0.85);
+  border: 1px solid rgba(166, 156, 124, 0.75);
+}
+
+@media (max-width: 560px) {
+  .found-row {
+    grid-template-columns: 84px 1fr;
   }
 }
