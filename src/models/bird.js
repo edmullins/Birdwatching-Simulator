@@ -19,19 +19,19 @@ function pointsForRarity(rarity) {
 
 // src/models/bird.js
 //
-// Issue #18 (starting point) — first real schema for design doc §5/§8's
+// Issue #18 (starting point) - first real schema for design doc §5/§8's
 // `birds` collection. Was an empty stub file before this;
 //
 // Known follow-ups this does NOT attempt to solve:
-//   - No birds catalog endpoint (GET /api/birds?visibility=approved) —
+//   - No birds catalog endpoint (GET /api/birds?visibility=approved) -
 //     public/js/game/birdSpawner.js still runs off DEV_FIXTURE_BIRD_POOL.
 //   - No admin review controller/routes for the submitted -> approved /
 //     rejected flow described in §5, though `visibility` here is shaped
 //     to support it directly.
 //   - Run.birdsFound (src/models/run.js) still expects real Bird
-//     ObjectIds but nothing populates them yet — level.js sends `[]`.
+//     ObjectIds but nothing populates them yet - level.js sends `[]`.
 //   - "Global bounds" for scaleRange / image dimensions are listed as
-//     TBD in the design doc's Open Questions — enforce those at the
+//     TBD in the design doc's Open Questions - enforce those at the
 //     upload controller once it exists; this schema only checks
 //     internal consistency (min <= max), not the as-yet-undefined
 //     global ceiling.
@@ -72,6 +72,16 @@ const careSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const licenseSchema = new mongoose.Schema(
+  {
+    source: { type: String, required: true, maxlength: 60},          // e.g. "USFWS National Digital Library"
+    sourceUrl: { type: String, required: true, maxlength: 300},
+    licenseType: { type: String, required: true, maxlength: 60},     // "public-domain" | "cc0" | "cc-by" | "original"
+    attributionText: { type: String, required: false, maxlength: 150} // This work is an adaptation of '[Title of Work]' by [Author Name], used under CC BY 4.0. Changes include [briefly describe changes].
+  },
+  { _id: false }
+);
+
 const birdSchema = new mongoose.Schema(
   {
     // Owner of the upload. Left optional (rather than required) so
@@ -97,22 +107,69 @@ const birdSchema = new mongoose.Schema(
     // The real-world species this bird represents (e.g. "Mourning
     // Dove"). Kept separate from `name` per design doc §5/§8 — a player
     // could in principle upload the same species under different names.
-    speciesName: {
+    scientificName: {
       type: String,
       required: true,
       trim: true,
       maxlength: 60,
     },
 
-    // 1-3 animation frames; frames[0] is the rest/sitting pose (see
-    // birdSpawner.js), frames[1:] are the flap/transition cycle.
-    frames: {
-      type: [String],
+    // --- Field Guide content (#37). Text-only; caps keep the two-page
+    // spread in components/fieldGuide.js from being blown out. ---
+    physicalDescription: {
+      type: String,
       required: true,
-      validate: {
-        validator: (arr) => Array.isArray(arr) && arr.length >= 1 && arr.length <= 3,
-        message: 'frames must contain between 1 and 3 URLs',
-      },
+      trim: true,
+      maxlength: 500,
+    },
+
+    breedingRegion: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 200,
+    },
+
+    size: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 60,
+    },
+
+    food: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 120,
+    },
+
+    habitat: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 120,
+    },
+
+    song: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 120,
+    },
+
+    funFact: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 300,
+    },
+
+    // Bird image metadata for the single sitting image used in-game.
+    imageUrl: {
+      type: String,
+      required: true,
+      trim: true,
     },
 
     // Set by the uploader within global bounds enforced elsewhere (see
@@ -143,6 +200,11 @@ const birdSchema = new mongoose.Schema(
       default: 'private',
       required: true,
       index: true,
+    },
+
+    license: {
+      type: licenseSchema,
+      required: true,
     },
 
     // True if this bird is eligible for tamagotchi-style pet care (§6).

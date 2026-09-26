@@ -2,13 +2,15 @@
 // ---------------------------------------------------------------------
 // Renders the main menu for a signed-in user: greets user, shows season
 // stats (runs, best score, species count), mounts the level selector and
-// live leaderboard, and handles logout via api.logout() then navigates
-// to the login view. Escapes username to prevent XSS.
+// live leaderboard, opens the Field Guide modal, and handles logout via
+// api.logout() then navigates to the login view. Escapes username to
+// prevent XSS.
 // ---------------------------------------------------------------------
 import { showView } from '../router.js';
 import { api } from '../api.js';
 import { mountLevelSelect } from '../components/levelSelect.js';
 import { mountLeaderboard } from '../components/leaderboard.js';
+import { openFieldGuideModal } from '../components/fieldGuide.js';
 
 export function mountMainMenu(container, params) {
   const user = params?.user;
@@ -24,9 +26,14 @@ export function mountMainMenu(container, params) {
         <h1>Field Log</h1>
       </div>
 
-      <button type="button" class="btn btn-ghost" data-action="logout">
-        Log out
-      </button>
+      <div class="menu-topbar-actions">
+        <button type="button" class="btn btn-ghost" data-action="field-guide">
+          Field Guide
+        </button>
+        <button type="button" class="btn btn-ghost" data-action="logout">
+          Log out
+        </button>
+      </div>
     </header>
 
     <main class="menu-shell">
@@ -87,6 +94,16 @@ export function mountMainMenu(container, params) {
   const leaderboardContainer = container.querySelector('[data-leaderboard]');
   if (leaderboardContainer) {
     mountLeaderboard(leaderboardContainer, { currentUsername: username });
+  }
+
+  // Field Guide modal. It mounts into #modal-root (not through showView) and
+  // watches this view's `hidden` attribute, so logging out or starting a level
+  // while it's open closes it automatically.
+  const fieldGuideButton = container.querySelector('[data-action="field-guide"]');
+  if (fieldGuideButton) {
+    fieldGuideButton.addEventListener('click', () => {
+      openFieldGuideModal({ hostView: container });
+    });
   }
 
   // Handle logout

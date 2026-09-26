@@ -1,7 +1,8 @@
 <!-- public/index.html
 ---------------------------------------------------------------------
 App shell: loads fonts and CSS, defines four hidden view sections
-(login, mainMenu, level, roundSummary), and runs js/main.js.
+(login, mainMenu, level, roundSummary), a #modal-root for overlays that
+layer over a view (Field Guide modal), and runs js/main.js.
 --------------------------------------------------------------------- -->
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +28,7 @@ App shell: loads fonts and CSS, defines four hidden view sections
     <section class="view" data-view="level" hidden></section>
     <section class="view" data-view="roundSummary" hidden></section>
   </main>
+  <div id="modal-root"></div>
   <script type="module" src="js/main.js"></script>
 </body>
 
