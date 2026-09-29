@@ -165,10 +165,35 @@ const birdSchema = new mongoose.Schema(
       maxlength: 300,
     },
 
-    // Bird image metadata for the single sitting image used in-game.
+    // Bird image metadata for the image used in-game.
     imageUrl: {
       type: String,
       required: true,
+      trim: true,
+    },
+
+    // --- Photo credit (#43). The original, uncropped Macaulay Library
+    // photo (public/assets/birds/og/<creditId>.*) shown in the main-menu
+    // Field Guide, plus who to credit for it in the Credits modal. Left
+    // optional at the schema level (a future player upload won't have a
+    // Macaulay asset), but scripts/seedBirds.js requires both for every
+    // official bird it seeds.
+    creditId: {
+      type: String,
+      trim: true,
+      maxlength: 30,
+    },
+
+    imageAuthor: {
+      type: String,
+      trim: true,
+      maxlength: 80,
+    },
+
+    // The original photo itself, as opposed to the cropped/processed
+    // in-game sprite at `imageUrl` above.
+    ogImageUrl: {
+      type: String,
       trim: true,
     },
 

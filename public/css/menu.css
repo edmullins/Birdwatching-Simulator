@@ -451,6 +451,102 @@
   outline-offset: 2px;
 }
 
+/* ---------------------------------------------------------------
+   Photo Credits modal (components/creditsModal.js — #43)
+   Reuses .modal-backdrop/.modal-card/.modal-close above; sized much
+   narrower than the Field Guide card since it's just a scrolling list.
+   ----------------------------------------------------------------*/
+.modal-card--credits {
+  width: min(560px, 100%);
+}
+
+.credits-panel {
+  max-height: min(640px, 80vh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  background: var(--card);
+  border: 6px solid var(--pine);
+  border-radius: 6px;
+  box-shadow: 0 18px 34px -22px rgba(32, 42, 31, 0.65);
+}
+
+.credits-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.credits-header {
+  flex: none;
+  padding: 22px 26px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.credits-title {
+  margin: 0 0 8px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.5rem;
+  color: var(--ink);
+}
+
+.credits-general {
+  margin: 0;
+  color: rgba(32, 42, 31, 0.75);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.credits-general a,
+.credits-author {
+  color: var(--pine-dark);
+  text-decoration-color: rgba(51, 80, 62, 0.5);
+}
+
+.credits-general a:hover,
+.credits-author:hover {
+  text-decoration-color: currentColor;
+}
+
+.credits-status {
+  margin: 0;
+  padding: 22px 26px;
+  color: rgba(32, 42, 31, 0.7);
+}
+
+.credits-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 6px 26px 22px;
+  list-style: none;
+}
+
+.credits-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px dashed rgba(166, 156, 124, 0.9);
+}
+
+.credits-item:last-child {
+  border-bottom: none;
+}
+
+.credits-bird-name {
+  font-weight: 600;
+}
+
+.credits-author {
+  flex: none;
+  font-size: 0.92rem;
+  text-align: right;
+}
+
 @media (max-width: 500px) {
   .menu-topbar {
     flex-wrap: wrap;

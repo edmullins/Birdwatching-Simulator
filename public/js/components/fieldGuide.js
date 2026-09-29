@@ -105,7 +105,11 @@ export function mountFieldGuide(container, { size = 'mini' } = {}) {
     }
 
     const thumb = el('img', 'fg-thumb');
-    thumb.src = bird.imageUrl;
+    // The large (main-menu) spread shows the original, uncropped Macaulay
+    // Library photo; the mini in-level widget keeps the in-game sprite so
+    // it still reads at small size. Falls back to the sprite if an older
+    // bird doc has no ogImageUrl yet.
+    thumb.src = (isLarge && bird.ogImageUrl) ? bird.ogImageUrl : bird.imageUrl;
     thumb.alt = '';
     thumb.draggable = false;
     thumb.loading = 'lazy';

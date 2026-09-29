@@ -2,15 +2,16 @@
 // ---------------------------------------------------------------------
 // Renders the main menu for a signed-in user: greets user, shows season
 // stats (runs, best score, species count), mounts the level selector and
-// live leaderboard, opens the Field Guide modal, and handles logout via
-// api.logout() then navigates to the login view. Escapes username to
-// prevent XSS.
+// live leaderboard, opens the Field Guide and Photo Credits modals, and
+// handles logout via api.logout() then navigates to the login view.
+// Escapes username to prevent XSS.
 // ---------------------------------------------------------------------
 import { showView } from '../router.js';
 import { api } from '../api.js';
 import { mountLevelSelect } from '../components/levelSelect.js';
 import { mountLeaderboard } from '../components/leaderboard.js';
 import { openFieldGuideModal } from '../components/fieldGuide.js';
+import { openCreditsModal } from '../components/creditsModal.js';
 
 export function mountMainMenu(container, params) {
   const user = params?.user;
@@ -29,6 +30,9 @@ export function mountMainMenu(container, params) {
       <div class="menu-topbar-actions">
         <button type="button" class="btn btn-ghost" data-action="field-guide">
           Field Guide
+        </button>
+        <button type="button" class="btn btn-ghost" data-action="credits">
+          Credits
         </button>
         <button type="button" class="btn btn-ghost" data-action="logout">
           Log out
@@ -103,6 +107,15 @@ export function mountMainMenu(container, params) {
   if (fieldGuideButton) {
     fieldGuideButton.addEventListener('click', () => {
       openFieldGuideModal({ hostView: container });
+    });
+  }
+
+  // Photo Credits modal (#43) — same mount/lifecycle pattern as the Field
+  // Guide modal above.
+  const creditsButton = container.querySelector('[data-action="credits"]');
+  if (creditsButton) {
+    creditsButton.addEventListener('click', () => {
+      openCreditsModal({ hostView: container });
     });
   }
 

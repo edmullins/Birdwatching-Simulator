@@ -25,6 +25,9 @@ const BIRD_FIELDS = [
   'song',
   'funFact',
   'imageUrl',
+  'ogImageUrl',
+  'creditId',
+  'imageAuthor',
   'scaleRange',
   'rarity'
 ].join(' ');
@@ -42,6 +45,9 @@ function toBirdPayload(bird) {
     song: bird.song,
     funFact: bird.funFact,
     imageUrl: bird.imageUrl,
+    ogImageUrl: bird.ogImageUrl,
+    creditId: bird.creditId,
+    imageAuthor: bird.imageAuthor,
     scaleRange: bird.scaleRange,
     rarity: bird.rarity
   };
