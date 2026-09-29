@@ -14,8 +14,22 @@
 //      there are no stale leftovers.
 //
 // To add a bird: drop `<slug>.png` in public/assets/birds/, then add an
-// entry below with ALL eight text fields. Entries without an `imageName`
-// go in `pendingBirds` until the art exists.
+// entry below with ALL eight text fields.
+//
+// Photo credit / Credits modal (#43): every entry also carries `creditId`,
+// the Macaulay Library asset id (https://macaulaylibrary.org/asset/<id>),
+// and `imageAuthor`, the contributing photographer. Those two are all the
+// original-photo data entry needs - this script derives everything else
+// from them:
+//   - `ogImageUrl`: resolved against whatever file actually sits at
+//     public/assets/birds/og/<creditId>.* (extension varies - jpg/jpeg/png
+//     - so it's read off disk rather than assumed, same spirit as the PNG
+//     dimension read below).
+//   - `license`: the { source, sourceUrl, licenseType, attributionText }
+//     the Bird schema requires, built straight from creditId + imageAuthor
+//     so every official bird now actually carries one (closes #43: license
+//     used to only get set when an entry supplied one by hand, and none
+//     ever did, so it silently went unset on every seed).
 // ---------------------------------------------------------------------
 import 'dotenv/config';
 import fs from 'node:fs/promises';
@@ -43,15 +57,39 @@ const FIELD_GUIDE_FIELDS = [
   'funFact'
 ];
 
-// TODO(#43): add a `license: { source, sourceUrl, licenseType, attributionText }`
-// object to each entry once the image sources are documented. It is passed
-// through to the DB when present.
+// Values that mean "we don't actually know who took this photo" rather
+// than a real name, so the Credits modal can show something readable
+// instead of printing them verbatim. "Anonymous" is a real Macaulay
+// Library contributor label, not a placeholder, so it's left alone.
+const UNKNOWN_AUTHOR_VALUES = new Set(['', 'na', 'n/a', 'unknown']);
+const UNKNOWN_AUTHOR_LABEL = 'Unknown photographer';
+
+function normalizeAuthor(imageAuthor) {
+  const trimmed = String(imageAuthor ?? '').trim();
+  return UNKNOWN_AUTHOR_VALUES.has(trimmed.toLowerCase()) ? null : trimmed;
+}
+
+// Every original photo credited to the Cornell Lab / Macaulay Library
+// shares the same `source` + `licenseType`; only the per-bird asset page
+// (sourceUrl) and byline (attributionText) change.
+function buildLicense(bird) {
+  const author = normalizeAuthor(bird.imageAuthor);
+  return {
+    source: 'Cornell Lab of Ornithology | Macaulay Library',
+    sourceUrl: `https://macaulaylibrary.org/asset/${bird.creditId}`,
+    licenseType: 'macaulay-library',
+    attributionText: `${author ?? UNKNOWN_AUTHOR_LABEL} / Macaulay Library`
+  };
+}
+
 const birds = [
   {
     name: "Acadian Flycatcher",
     scientificName: "Empidonax virescens",
     rarity: "rare",
     imageName: "acadian-flycatcher.png",
+    creditId: "665075681",
+    imageAuthor: "James Hully",
     physicalDescription: "Big peaked head and relatively long bill. Greenish-olive above and pale whitish below. Thin white eyering and very long wingtips.",
     breedingRegion: "Eastern North America's deciduous and mixed forests, stretching from the eastern Great Plains and Gulf Coast up to southern New England.",
     size: "5.5 in",
@@ -65,6 +103,8 @@ const birds = [
     scientificName: "Corvus brachyrhynchos",
     rarity: "basic",
     imageName: "american-crow.png",
+    creditId: "665352708",
+    imageAuthor: "Julia Proulx",
     physicalDescription: "Large, all-black bird with a thick black bill, black legs, and a slightly rounded tail. The feathers show a faint purplish gloss in bright sun.",
     breedingRegion: "Breeds across most of the United States and southern Canada; northern birds migrate south for the winter.",
     size: "16-21 in",
@@ -78,6 +118,8 @@ const birds = [
     scientificName: "Setophaga ruticilla",
     rarity: "rare",
     imageName: "american-redstart.png",
+    creditId: "665340794",
+    imageAuthor: "Charlie Arp",
     physicalDescription: "Small, restless warbler. Males are black with bright orange patches on the wings, sides, and tail; females and young birds are gray with yellow patches in the same places.",
     breedingRegion: "Breeds across southern Canada and the northern and eastern United States; winters in the Caribbean, Mexico, Central America, and northern South America.",
     size: "4.3-5.5 in",
@@ -91,6 +133,8 @@ const birds = [
     scientificName: "Strix varia",
     rarity: "legendary",
     imageName: "barred-owl.png",
+    creditId: "665334574",
+    imageAuthor: "☘️ Diggle",
     physicalDescription: "Large, round-headed owl with dark brown eyes and no ear tufts. Gray-brown with horizontal barring across the chest and vertical streaks down the belly.",
     breedingRegion: "Eastern North America from southern Canada to the Gulf Coast, and across Canada and into the Pacific Northwest.",
     size: "16-25 in",
@@ -104,6 +148,8 @@ const birds = [
     scientificName: "Vireo bellii",
     rarity: "epic",
     imageName: "bells-vireo.png",
+    creditId: "662093967",
+    imageAuthor: "Mason Maron",
     physicalDescription: "Small, drab vireo with a gray-olive back, pale underparts, one or two faint wingbars, and a faint pale line above the eye. Easier to hear than to see.",
     breedingRegion: "Breeds in the central and southwestern United States and northern Mexico; winters in western Mexico and Central America.",
     size: "4.5-5 in",
@@ -117,6 +163,8 @@ const birds = [
     scientificName: "Thryothorus ludovicianus",
     rarity: "basic",
     imageName: "carolina-wren.png",
+    creditId: "665294079",
+    imageAuthor: "Ian Sarmiento",
     physicalDescription: "Small, plump, rusty-brown wren with a bold white eyebrow stripe, buffy-orange underparts, and a short tail that is often cocked upward.",
     breedingRegion: "Lives year-round across the southeastern and eastern United States and into northeastern Mexico.",
     size: "4.7-5.5 in",
@@ -130,6 +178,8 @@ const birds = [
     scientificName: "Accipiter cooperii",
     rarity: "rare",
     imageName: "coopers-hawk.png",
+    creditId: "665331569",
+    imageAuthor: "Danielle A",
     physicalDescription: "Medium-sized hawk with short, rounded wings and a long tail banded in dark stripes with a white tip. Adults have a blue-gray back and rusty barring on the chest; young birds are brown with streaked chests.",
     breedingRegion: "Breeds across most of the United States and southern Canada; northern birds migrate south to Mexico and Central America.",
     size: "14-20 in",
@@ -143,6 +193,8 @@ const birds = [
     scientificName: "Sialia sialis",
     rarity: "basic",
     imageName: "eastern-bluebird.png",
+    creditId: "658902247",
+    imageAuthor: "Natalie Carusillo",
     physicalDescription: "Small thrush. Males are bright blue above with a rusty-orange throat and chest and a white belly; females are grayer with blue tinges on the wings and tail.",
     breedingRegion: "Eastern and central North America from southern Canada to the Gulf Coast, and south into Mexico and Central America.",
     size: "6-8 in",
@@ -156,6 +208,8 @@ const birds = [
     scientificName: "Quiscalus quiscula",
     rarity: "basic",
     imageName: "grackle.png",
+    creditId: "665248679",
+    imageAuthor: "Bryan Thorne",
     physicalDescription: "Lanky blackbird with a long, keel-shaped tail, a long dark bill, and pale yellow eyes. Looks black from a distance, but the head shimmers purple-blue and the body bronze in good light.",
     breedingRegion: "Eastern and central North America, from the Rocky Mountains to the Atlantic and from southern Canada to the Gulf Coast.",
     size: "11-13 in",
@@ -169,6 +223,8 @@ const birds = [
     scientificName: "Ardea herodias",
     rarity: "rare",
     imageName: "great-blue-heron.png",
+    creditId: "664986573",
+    imageAuthor: "Rob Bielawski",
     physicalDescription: "Very tall, long-legged wading bird with blue-gray plumage, a black stripe over the eye, a long S-curved neck, and a dagger-like yellowish bill.",
     breedingRegion: "Breeds across most of North America, from Alaska and Canada to Mexico; northern birds move south for the winter.",
     size: "38-54 in",
@@ -182,6 +238,8 @@ const birds = [
     scientificName: "Haemorhous mexicanus",
     rarity: "basic",
     imageName: "house-finch.png",
+    creditId: "665360187",
+    imageAuthor: "Delaney McKinney",
     physicalDescription: "Small, slim finch with a streaky brown back and belly. Males have red on the head and chest (sometimes orange or yellow); females are plain brown with blurry streaks.",
     breedingRegion: "Native to the western United States and Mexico; introduced to the East in the 1940s and now found across most of the U.S. and southern Canada.",
     size: "5-5.5 in",
@@ -195,6 +253,8 @@ const birds = [
     scientificName: "Passer domesticus",
     rarity: "basic",
     imageName: "house-sparrow.png",
+    creditId: "665331188",
+    imageAuthor: "Anthony Capone",
     physicalDescription: "Small, stocky sparrow. Males have a gray crown, black bib, and chestnut nape; females are plain buffy brown with a pale stripe above the eye.",
     breedingRegion: "Native to Eurasia and North Africa; introduced to North America in the 1850s and now found across most of the continent.",
     size: "5.5-6.7 in",
@@ -208,6 +268,8 @@ const birds = [
     scientificName: "Charadrius vociferus",
     rarity: "rare",
     imageName: "killdeer.png",
+    creditId: "665329015",
+    imageAuthor: "Jenn Yeaple",
     physicalDescription: "Medium-sized plover with a brown back, white belly, and two black bands across the chest. Has a large dark eye with an orange-red eyering and a bright rusty-orange rump that shows in flight.",
     breedingRegion: "Breeds across most of North America; northern birds winter in the southern United States and Central America.",
     size: "8-11 in",
@@ -221,6 +283,8 @@ const birds = [
     scientificName: "Setophaga magnolia",
     rarity: "rare",
     imageName: "magnolia-warbler.png",
+    creditId: "665341399",
+    imageAuthor: "NA",
     physicalDescription: "Small warbler with a bright yellow underside marked by bold black streaks, a black mask, a gray crown, white wing patches, and a white-banded tail.",
     breedingRegion: "Breeds in the boreal forests of Canada and the northern United States; winters in Central America and the Caribbean.",
     size: "4.3-5.1 in",
@@ -234,6 +298,8 @@ const birds = [
     scientificName: "Zenaida macroura",
     rarity: "basic",
     imageName: "mourning-dove.png",
+    creditId: "665351527",
+    imageAuthor: "Zachary Spatz",
     physicalDescription: "Slender, soft brown-gray dove with a small head, black spots on the wings, and a long, pointed tail with white edges.",
     breedingRegion: "Lives year-round across most of the United States and Mexico, and breeds into southern Canada.",
     size: "9-13 in",
@@ -247,6 +313,8 @@ const birds = [
     scientificName: "Cardinalis cardinalis",
     rarity: "basic",
     imageName: "northern-cardinal.png",
+    creditId: "665337390",
+    imageAuthor: "Texas Bird Family",
     physicalDescription: "Crested songbird with a thick, cone-shaped orange-red bill. Males are brilliant red with a black face mask; females are warm tan with red tinges on the wings, crest, and tail.",
     breedingRegion: "Lives year-round across the eastern and central United States, southern Ontario, and Mexico, with pockets in the Southwest.",
     size: "8-9 in",
@@ -260,6 +328,8 @@ const birds = [
     scientificName: "Mimus polyglottos",
     rarity: "basic",
     imageName: "northern-mockingbird.png",
+    creditId: "665342071",
+    imageAuthor: "Amanda Guercio",
     physicalDescription: "Slender gray songbird with a long tail, white patches on the wings, and white outer tail feathers that flash in flight.",
     breedingRegion: "Lives year-round across most of the United States, Mexico, and the Caribbean; the northern edge of its range shifts with the seasons.",
     size: "8-10 in",
@@ -273,6 +343,8 @@ const birds = [
     scientificName: "Setophaga americana",
     rarity: "basic",
     imageName: "northern-parula.png",
+    creditId: "665353898",
+    imageAuthor: "John Cassady",
     physicalDescription: "Tiny blue-gray warbler with a yellow throat and breast, a greenish patch on the back, two white wingbars, and broken white crescents around the eye.",
     breedingRegion: "Breeds across eastern North America; winters in Florida, Mexico, Central America, and the Caribbean.",
     size: "4-4.5 in",
@@ -286,6 +358,8 @@ const birds = [
     scientificName: "Parkesia noveboracensis",
     rarity: "epic",
     imageName: "northern-waterthrush.png",
+    creditId: "665346389",
+    imageAuthor: "Anonymous",
     physicalDescription: "Brown, ground-dwelling warbler with a streaked pale-yellow to white underside and a pale stripe over the eye. Constantly bobs its rear end as it walks.",
     breedingRegion: "Breeds across Alaska, Canada, and the northern United States; winters in Mexico, Central America, the Caribbean, and northern South America.",
     size: "5-6 in",
@@ -299,6 +373,8 @@ const birds = [
     scientificName: "Calidris melanotos",
     rarity: "rare",
     imageName: "pectoral-sandpiper.png",
+    creditId: "665357954",
+    imageAuthor: "Estela Quintero-Weldon",
     physicalDescription: "Medium-sized sandpiper with a streaked brown breast that ends sharply against a white belly, yellowish legs, and a slightly downcurved bill.",
     breedingRegion: "Breeds on the Arctic tundra of northern Alaska, Canada, and Siberia; winters mostly in southern South America.",
     size: "7.5-9.5 in",
@@ -312,6 +388,8 @@ const birds = [
     scientificName: "Melanerpes carolinus",
     rarity: "basic",
     imageName: "red-bellied-woodpecker.png",
+    creditId: "665248699",
+    imageAuthor: "Debbie Thurber",
     physicalDescription: "Medium woodpecker with a black-and-white barred back, a pale face and belly, and a red cap. Males are red from bill to nape; females only on the nape. The reddish belly patch is faint and easy to miss.",
     breedingRegion: "Lives year-round across the southeastern and eastern United States, ranging north to the Great Lakes and west into the Great Plains.",
     size: "9-10 in",
@@ -325,6 +403,8 @@ const birds = [
     scientificName: "Baeolophus bicolor",
     rarity: "basic",
     imageName: "tufted-titmouse.png",
+    creditId: "665293890",
+    imageAuthor: "Pam Perna",
     physicalDescription: "Small gray songbird with a pointed crest, large black eyes, white underparts, and rusty-orange sides. A black patch sits just above the bill.",
     breedingRegion: "Lives year-round across the eastern United States, from the Great Lakes to the Gulf Coast.",
     size: "5.5-6.3 in",
@@ -338,6 +418,8 @@ const birds = [
     scientificName: "Eudocimus albus",
     rarity: "epic",
     imageName: "white-ibis.png",
+    creditId: "665353191",
+    imageAuthor: "Brit Lue",
     physicalDescription: "Medium wading bird with white plumage, black wingtips that show in flight, a long downcurved reddish-orange bill, and red-orange legs.",
     breedingRegion: "Coastal southeastern United States along the Atlantic and Gulf coasts, and south through Mexico, Central America, and the Caribbean.",
     size: "22-27 in",
@@ -351,6 +433,8 @@ const birds = [
     scientificName: "Nyctanassa violacea",
     rarity: "legendary",
     imageName: "yellow-crowned-night-heron.png",
+    creditId: "665360675",
+    imageAuthor: "Adrian Lakin",
     physicalDescription: "Stocky gray heron with a black head, a white cheek patch, a creamy-yellow crown, red eyes, and long yellow legs.",
     breedingRegion: "Breeds in the southeastern United States along the Atlantic and Gulf coasts and up the Mississippi Valley, and south through Mexico and Central America.",
     size: "22-28 in",
@@ -358,18 +442,97 @@ const birds = [
     habitat: "Coastal and inland wetlands: swamps, bayous, mangroves, and wooded streams.",
     song: "A sharp, barking quawk",
     funFact: "Yellow-crowned Night Herons specialize in crabs and crayfish, and often dismember their prey before swallowing."
+  },
+  {
+    name: "Clarks Nutcracker",
+    scientificName: "Nucifraga columbiana",
+    rarity: "basic",
+    imageName: "clarks-nutcracker.png",
+    creditId: "665361535",
+    imageAuthor: "Terri Gueck",
+    physicalDescription: "Pale gray, crow-sized bird with a long, spike-like black bill. Black wings carry a bold white patch, and the black tail has white edges, both flashing in flight.",
+    breedingRegion: "High-elevation conifer forests of the western United States and southwestern Canada, mostly between 3,000 and 12,000 feet.",
+    size: "12-13 in",
+    food: "Pine seeds year-round, plus other seeds, nuts, berries, insects, and carrion",
+    habitat: "Open subalpine pine forests near the treeline, especially stands of whitebark or limber pine.",
+    song: "A loud, guttural, far-carrying kraaaa",
+    funFact: "A single nutcracker can bury tens of thousands of pine seeds each fall and rely on memory alone to relocate most of them through the winter."
+  },
+  {
+    name: "Blue Eyed Ground Dove",
+    scientificName: "Columbina cyanopis",
+    rarity: "legendary",
+    imageName: "blue-eyed-ground-dove.png",
+    creditId: "654382066",
+    imageAuthor: "Thelma Gátuzzô",
+    physicalDescription: "Small, plump dove with warm rufous-brown plumage on the head, neck, and wings, dark blue spots dotting the wings, and strikingly bright blue eyes.",
+    breedingRegion: "Endemic to a handful of isolated patches of cerrado savanna in central Brazil.",
+    size: "6 in",
+    food: "Seeds and small insects gleaned from bare or grassy ground",
+    habitat: "Open, white-sand cerrado savanna near fresh water; reluctant to fly and rarely flushes from cover.",
+    song: "A soft, low cooing, seldom heard given how few birds remain",
+    funFact: "Believed extinct for over 75 years, it was rediscovered in 2015 and is now one of the rarest birds alive, with a wild population estimated at under 20 individuals."
+  },
+  {
+    name: "Northern Shoveler",
+    scientificName: "Spatula clypeata",
+    rarity: "basic",
+    imageName: "northern-shoveler.png",
+    creditId: "665209858",
+    imageAuthor: "WENDELIN LONG",
+    physicalDescription: "Dabbling duck with an oversized, spoon-shaped bill. Males have a glossy green head, white chest, and rusty sides; females are mottled brown with the same giveaway bill.",
+    breedingRegion: "Breeds across Alaska, Canada, and the north-central United States; winters across the southern U.S., Mexico, and beyond.",
+    size: "17-20 in",
+    food: "Tiny crustaceans, aquatic invertebrates, and seeds filtered from the water",
+    habitat: "Shallow wetlands, marshes, and ponds with submerged vegetation.",
+    song: "A low, guttural took-took or a soft quacking cluck",
+    funFact: "Its bill is lined with comb-like ridges called lamellae, which it uses to strain food from the water much like a baleen whale strains plankton from the sea."
+  },
+  {
+    name: "Piping Plover",
+    scientificName: "Charadrius melodus",
+    rarity: "epic",
+    imageName: "piping-plover.png",
+    creditId: "665367340",
+    imageAuthor: "Dee R",
+    physicalDescription: "Small, round, sand-colored plover with white underparts, a stubby orange-and-black bill, and a single black breast band that's often incomplete.",
+    breedingRegion: "Beaches of the U.S. Atlantic coast and the shorelines of the northern Great Plains and Great Lakes.",
+    size: "7 in",
+    food: "Marine worms, small crustaceans, insects, and other invertebrates picked from wet sand",
+    habitat: "Sandy beaches, sandflats, and mudflats above the high-tide line, with sparse vegetation.",
+    song: "A clear, melodic peep-lo, the piping whistle it's named for",
+    funFact: "Its sandy plumage camouflages it so well on open beach that most people walk right past a nesting pair without ever spotting one."
+  },
+  {
+    name: "Lark Sparrow",
+    scientificName: "Chondestes grammacus",
+    rarity: "basic",
+    imageName: "lark-sparrow.png",
+    creditId: "665367313",
+    imageAuthor: "Heidi Murphy",
+    physicalDescription: "Large sparrow with a bold chestnut-and-white harlequin face pattern, a dark spot in the center of an otherwise plain breast, and a long tail edged in white.",
+    breedingRegion: "Breeds from southern Canada south to northern Mexico, mainly across the western U.S. and Great Plains.",
+    size: "6-7 in",
+    food: "Insects in summer, seeds in winter, picked from the ground or from low plants",
+    habitat: "Open grassland with scattered trees and shrubs, orchards, and roadsides.",
+    song: "A jumbled, musical mix of clear notes, buzzes, and trills",
+    funFact: "Courting males perform an elaborate hopping-and-crouching dance that can last up to five minutes, unlike the display of any other sparrow."
+  },
+  {
+    name: "Southern Lapwing",
+    scientificName: "Vanellus chilensis",
+    rarity: "rare",
+    imageName: "southern-lapwing.png",
+    creditId: "665367191",
+    imageAuthor: "Scott Fox",
+    physicalDescription: "Large, crested shorebird with a black face and breast bordered in white, a grey crown, bronze-glossed shoulders, and bright red eyes.",
+    breedingRegion: "Common and widespread across South America outside dense rainforest and the high Andes; increasingly seen in Central America.",
+    size: "13-15 in",
+    food: "Insects, worms, and other invertebrates, plus some seeds in dry seasons",
+    habitat: "Open grassland, wetlands, and river banks near water, including farmland and city parks.",
+    song: "A loud, harsh, repeated keek-keek-keek",
+    funFact: "It's the national bird of Uruguay, where it's called tero, and defends its nest so noisily and aggressively that it will dive-bomb intruders many times its size."
   }
-];
-
-// Planned birds with no art or Field Guide text yet. Not seeded. Move an
-// entry into `birds` above once it has an image and all eight text fields.
-const pendingBirds = [
-  { name: 'Clarks Nutcracker', rarity: 'basic' },
-  { name: 'Blue Eyed Ground Dove', rarity: 'legendary' },
-  { name: 'Northern Shoveler', rarity: 'basic' },
-  { name: 'Piping Plover', rarity: 'epic' },
-  { name: 'Lark Sparrow', rarity: 'basic' },
-  { name: 'Southern Lapwing', rarity: 'rare' }
 ];
 
 function readPngDimensions(buffer) {
@@ -400,6 +563,28 @@ function buildFieldGuideValues(bird) {
   return Object.fromEntries(FIELD_GUIDE_FIELDS.map((field) => [field, bird[field]]));
 }
 
+// public/assets/birds/og/<creditId>.<ext> - extension isn't fixed (uploads
+// came in as .jpg/.jpeg/.png), so instead of guessing it once, read the
+// directory and index every file by its own basename. Cached for the life
+// of the script; re-run it (npm run seed:birds) after dropping new og art.
+let ogImageIndexPromise = null;
+
+async function getOgImageIndex() {
+  if (!ogImageIndexPromise) {
+    ogImageIndexPromise = fs
+      .readdir(path.join(projectRoot, 'public', 'assets', 'birds', 'og'))
+      .then((files) => new Map(files.map((file) => [path.parse(file).name, file])));
+  }
+  return ogImageIndexPromise;
+}
+
+/** Resolves a bird's creditId to its actual og file, or null if none exists. */
+async function findOgImageUrl(creditId) {
+  const index = await getOgImageIndex();
+  const file = index.get(creditId);
+  return file ? `/assets/birds/og/${file}` : null;
+}
+
 // Validates every bird's name/rarity/field-guide values against the Bird
 // schema (length caps, required) without touching the DB, and collects all
 // problems so they can be fixed in one pass.
@@ -411,13 +596,24 @@ async function preflight() {
     if (seenNames.has(bird.name)) problems.push(`${bird.name}: duplicate name in seed list`);
     seenNames.add(bird.name);
 
-    if (!bird.imageName) problems.push(`${bird.name}: missing imageName (move it to pendingBirds)`);
+    if (!String(bird.creditId ?? '').trim()) problems.push(`${bird.name}: missing creditId (Macaulay Library asset id)`);
+    if (!String(bird.imageAuthor ?? '').trim()) problems.push(`${bird.name}: missing imageAuthor`);
 
     const missing = FIELD_GUIDE_FIELDS.filter((field) => !String(bird[field] ?? '').trim());
     if (missing.length) problems.push(`${bird.name}: missing ${missing.join(', ')}`);
 
-    const paths = ['name', 'rarity', ...FIELD_GUIDE_FIELDS];
-    const doc = new Bird({ name: bird.name, rarity: bird.rarity, ...buildFieldGuideValues(bird) });
+    if (bird.creditId && !(await findOgImageUrl(bird.creditId))) {
+      problems.push(`${bird.name}: no file in public/assets/birds/og/ named ${bird.creditId}.*`);
+    }
+
+    const paths = ['name', 'rarity', 'creditId', 'imageAuthor', ...FIELD_GUIDE_FIELDS];
+    const doc = new Bird({
+      name: bird.name,
+      rarity: bird.rarity,
+      creditId: bird.creditId,
+      imageAuthor: bird.imageAuthor,
+      ...buildFieldGuideValues(bird)
+    });
     try {
       await doc.validate(paths);
     } catch (error) {
@@ -451,6 +647,8 @@ async function seedBirds() {
 
     const imageMeta = await getImageMeta(imagePath);
     const imageUrl = `/assets/birds/${bird.imageName}`;
+    const ogImageUrl = await findOgImageUrl(bird.creditId); // preflight already confirmed this exists
+    const license = bird.license ?? buildLicense(bird);
 
     await Bird.findOneAndUpdate(
       {
@@ -464,10 +662,13 @@ async function seedBirds() {
           ...buildFieldGuideValues(bird),
           imageUrl,
           imageMeta,
+          creditId: bird.creditId,
+          imageAuthor: normalizeAuthor(bird.imageAuthor),
+          ogImageUrl,
           rarity: bird.rarity,
           visibility: 'approved',
           isUserCreature: false,
-          ...(bird.license ? { license: bird.license } : {})
+          license
         },
         $setOnInsert: {
           care: {
@@ -497,10 +698,6 @@ async function seedBirds() {
 
   const total = await Bird.countDocuments({ ownerId: null });
   console.log(`Official birds in DB: ${total} (expected ${birds.length})`);
-
-  if (pendingBirds.length) {
-    console.log(`Skipped ${pendingBirds.length} pending bird(s) with no art yet: ${pendingBirds.map((b) => b.name).join(', ')}`);
-  }
 }
 
 try {

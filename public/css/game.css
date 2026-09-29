@@ -423,8 +423,8 @@
 }
 
 .field-guide--large .fg-thumb {
-  width: 88px;
-  height: 88px;
+  width: 140px;
+  height: auto;
 }
 
 .fg-titles {
@@ -692,8 +692,11 @@
 }
 
 .found-logo img {
+  display: block;
+  height: 100px;
+  max-height: 100px;
   max-width: 100%;
-  max-height: 100%;
+  width: auto;
   object-fit: contain;
 }
 
