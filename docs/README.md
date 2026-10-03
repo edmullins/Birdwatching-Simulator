@@ -29,15 +29,6 @@ more evasive as levels progress. Every 10 levels, the background location change
 | feature → dev | [PR #49](https://github.com/edmullins/Birdwatching-Simulator/pull/49) |
 | dev → main | [PR #50](https://github.com/edmullins/Birdwatching-Simulator/pull/50) |
 | PROD deployment | [GitHub Action](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/37092403047) |
-| PROD codebase | [`main`](https://github.com/edmullins/Birdwatching-Simulator/tree/main) |
-| PROD server | [`GCP`](https://ethan.barrycumbie.com/) |
-| DEV codebase | [`dev`](https://github.com/edmullins/Birdwatching-Simulator/tree/dev) |
-| DEV server | [`Render`](https://birdwatching-simulator.onrender.com/) |
-| Docs | [`docs/`](https://github.com/edmullins/Birdwatching-Simulator/tree/main/docs) |
-| Published docs | [`GitHub Pages`](https://edmullins.github.io/Birdwatching-Simulator/) |
-| CI/CD workflow | [`deploy.yml`](https://github.com/edmullins/Birdwatching-Simulator/blob/main/.github/workflows/main.yml) |
-| Successful PROD deployment | [`GitHub Action`](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/34979983425/job/104417459023) |
-| Resolved GOLF issue | [issue #8](https://github.com/edmullins/Birdwatching-Simulator/issues/8) |
 
 ### user story
 
