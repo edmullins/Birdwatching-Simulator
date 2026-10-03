@@ -3,7 +3,7 @@ A single-player browser-based birdwatching game. Players view scenes built from
 layered real-life asset photos with bird images/animations composited on top.
 Holding **spacebar** zooms in through a binocular-shaped mask. Clicking a bird
 scores points based on rarity. Each level gives the player 5 minutes to find a
-minimum number of birds; birds get smaller, more distant, more obscured, and 
+minimum number of birds; birds get smaller, more distant, more obscured, and
 more evasive as levels progress. Every 10 levels, the background location changes.
 
 ### authorship + version
@@ -12,24 +12,39 @@ more evasive as levels progress. Every 10 levels, the background location change
 
 ### Deployments, Codebase, & Repo Features
 
-| Resource                   | Link                                                                                         |
-|-----------------------------|-----------------------------------------------------------------------------------------------|
-| PROD codebase               | [`main`](https://github.com/edmullins/Birdwatching-Simulator/tree/main)                       |
-| PROD server                  | [`GCP`](https://ethan.barrycumbie.com/)                                                       |
-| DEV codebase                 | [`dev`](https://github.com/edmullins/Birdwatching-Simulator/tree/dev)                         |
-| DEV server                    | [`Render`](https://birdwatching-simulator.onrender.com/)                                     |
-| Docs                          | [`docs/`](https://github.com/edmullins/Birdwatching-Simulator/tree/main/docs)                |
-| Published docs                | [`GitHub Pages`](https://edmullins.github.io/Birdwatching-Simulator/)                          |
-| CI/CD workflow                | [`deploy.yml`](https://github.com/edmullins/Birdwatching-Simulator/blob/main/.github/workflows/main.yml) |
-| Successful PROD deployment    | [`GitHub Action`](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/34979983425/job/104417459023) |
-| Resolved GOLF issue           | [`issue #8`](https://github.com/edmullins/Birdwatching-Simulator/issues/8)       |
+| requirement | evidence |
+|---|---|
+| MongoDB connection | [server code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/src/config/db.js#L7-L15) |
+| GET all | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L68) |
+| GET one | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L57) |
+| filtered GET | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L66) |
+| POST / create | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L54-L55) |
+| PATCH / update | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L59-L60) |
+| DELETE | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L63-L64) |
+| frontend `fetch()` | [client code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L15-L39) |
+| persistent CRUD | [PROD app](https://ethan.barrycumbie.com) |
+| HOTEL milestone | [milestone](https://github.com/edmullins/Birdwatching-Simulator/milestone/7) |
+| example issue | [issue #48](https://github.com/edmullins/Birdwatching-Simulator/issues/48) |
+| development branch | [branch](https://github.com/edmullins/Birdwatching-Simulator/tree/dev) |
+| feature → dev | [PR #49](https://github.com/edmullins/Birdwatching-Simulator/pull/49) |
+| dev → main | [PR #50](https://github.com/edmullins/Birdwatching-Simulator/pull/50) |
+| PROD deployment | [GitHub Action](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/37092403047) |
+| PROD codebase | [`main`](https://github.com/edmullins/Birdwatching-Simulator/tree/main) |
+| PROD server | [`GCP`](https://ethan.barrycumbie.com/) |
+| DEV codebase | [`dev`](https://github.com/edmullins/Birdwatching-Simulator/tree/dev) |
+| DEV server | [`Render`](https://birdwatching-simulator.onrender.com/) |
+| Docs | [`docs/`](https://github.com/edmullins/Birdwatching-Simulator/tree/main/docs) |
+| Published docs | [`GitHub Pages`](https://edmullins.github.io/Birdwatching-Simulator/) |
+| CI/CD workflow | [`deploy.yml`](https://github.com/edmullins/Birdwatching-Simulator/blob/main/.github/workflows/main.yml) |
+| Successful PROD deployment | [`GitHub Action`](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/34979983425/job/104417459023) |
+| Resolved GOLF issue | [issue #8](https://github.com/edmullins/Birdwatching-Simulator/issues/8) |
 
 ### user story
 
 - **As a** burgeoning full-stack developer,
 - **I want** a CI/CD infrastructure
 - **so that** I can develop locally, manage my code in GitHub, and
-    automatically deploy changes to DEV and PROD environments.
+  automatically deploy changes to DEV and PROD environments.
 
 ### narrative
 
@@ -54,76 +69,84 @@ GitHub
 `GCP` \| `Linux` \| `Nginx` \| `PM2` \| `Certbot` \| `GitHub Actions`
 
 ### Project Structure
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/edmullins/birdwatching-simulator?utm_source=readme&utm_medium=badge)
 <img width="4025" height="7948" alt="diagram" src="https://github.com/user-attachments/assets/b16c7a25-2f50-4a3a-908c-dc583570514d" />
 
 ```text
-├── README.md
-├── package-lock.json
-├── package.json
-├── public
-│   ├── assets
-│   │   ├── backgrounds
-│   │   │   ├── bg1.jpg
-│   │   │   ├── bg2.jpg
-│   │   │   ├── bg3.jpg
-│   │   │   ├── bg4.jpg
-│   │   │   ├── bg5.jpg
-│   │   │   └── loginBG.jpg
-│   │   ├── birds
-│   │   │   └── mourning-dove
-│   │   └── occlusion
-│   │       ├── binocularsSilhouette.png
-│   │       ├── bush1.png
-│   │       └── tree.png
-│   ├── css
+Birdwatching-Simulator/
+├── .github/
+│   └── workflows/
+│       └── main.yml
+├── docs/
+│   └── README.md
+├── public/
+│   ├── assets/
+│   │   ├── backgrounds/        (6 images: bg1–bg5, loginBG)
+│   │   ├── birds/              (30 bird sprites)
+│   │   │   └── og/             (30 original photos)
+│   │   ├── icons/
+│   │   │   └── search_icon.svg
+│   │   └── occlusion/          (bush1, tree, binocularsSilhouette)
+│   ├── css/
 │   │   ├── game.css
 │   │   ├── main.css
 │   │   └── menu.css
-│   ├── index.html
-│   └── js
-│       ├── api.js
-│       ├── components
-│       │   ├── binocularMask.js
-│       │   ├── leaderboard.js
-│       │   └── levelSelect.js
-│       ├── game
-│       │   ├── birdSpawner.js
-│       │   ├── input.js
-│       │   ├── renderer.js
-│       │   └── stateMachine.js
-│       ├── main.js
-│       ├── router.js
-│       └── views
-│           ├── level.js
-│           ├── login.js
-│           ├── mainMenu.js
-│           └── roundSummary.js
-├── server.js
-└── src
-    ├── app.js
-    ├── config
-    │   ├── db.js
-    │   └── session.js
-    ├── controllers
-    │   ├── authController.js
-    │   ├── birdController.js
-    │   ├── leaderboardController.js
-    │   └── runController.js
-    ├── middleware
-    │   ├── requireAdmin.js
-    │   └── requireAuth.js
-    ├── models
-    │   ├── bird.js
-    │   ├── run.js
-    │   └── user.js
-    ├── routes
-    │   ├── authRoutes.js
-    │   ├── birdRoutes.js
-    │   ├── leaderboardRoutes.js
-    │   └── runRoutes.js
-    └── services
-        ├── antiCheat.js
-        └── difficultyEngine.js
+│   ├── js/
+│   │   ├── components/
+│   │   │   ├── binocularMask.js
+│   │   │   ├── creditsModal.js
+│   │   │   ├── fieldGuide.js
+│   │   │   ├── leaderboard.js
+│   │   │   └── levelSelect.js
+│   │   ├── game/
+│   │   │   ├── birdSpawner.js
+│   │   │   ├── input.js
+│   │   │   ├── renderer.js
+│   │   │   └── stateMachine.js
+│   │   ├── utils/
+│   │   │   └── dom.js
+│   │   ├── views/
+│   │   │   ├── level.js
+│   │   │   ├── login.js
+│   │   │   ├── mainMenu.js
+│   │   │   └── roundSummary.js
+│   │   ├── api.js
+│   │   ├── main.js
+│   │   └── router.js
+│   └── index.html
+├── scripts/
+│   ├── seedBirds.js
+│   └── syncIndexes.js
+├── src/
+│   ├── config/
+│   │   ├── db.js
+│   │   └── session.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── birdController.js
+│   │   ├── leaderboardController.js
+│   │   └── runController.js
+│   ├── middleware/
+│   │   ├── requireAdmin.js
+│   │   └── requireAuth.js
+│   ├── models/
+│   │   ├── bird.js
+│   │   ├── run.js
+│   │   └── user.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── birdRoutes.js
+│   │   ├── leaderboardRoutes.js
+│   │   └── runRoutes.js
+│   ├── services/
+│   │   ├── antiCheat.js
+│   │   └── difficultyEngine.js
+│   └── app.js
+├── .env.example
+├── .gitignore
+├── package-lock.json
+├── package.json
+└── server.js
 ```
 
 ### GCP
