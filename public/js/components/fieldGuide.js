@@ -94,6 +94,38 @@ export function mountFieldGuide(container, { size = 'mini' } = {}) {
   root.append(spread, toolbar);
   container.append(root);
 
+  // Mini (in-level) only: an X on the guide hides it, and a small
+  // "Field Guide" button in the same corner brings it back. Only one of
+  // the two is ever visible. Like the other mini controls, both stay out
+  // of the tab order so Space keeps meaning "zoom" and the name textbox
+  // keeps focus.
+  let reopenButton = null;
+  if (!isLarge) {
+    const closeButton = el('button', 'fg-close', '\u00d7');
+    closeButton.type = 'button';
+    closeButton.tabIndex = -1;
+    closeButton.setAttribute('aria-label', 'Hide field guide');
+
+    reopenButton = el('button', 'fg-reopen', 'Field Guide');
+    reopenButton.type = 'button';
+    reopenButton.tabIndex = -1;
+    reopenButton.hidden = true; // guide starts open
+    reopenButton.setAttribute('aria-label', 'Show field guide');
+    // Lives outside `root`, so it needs its own focus-keeping handler
+    // (root's mousedown handler below already covers the X).
+    reopenButton.addEventListener('mousedown', (event) => event.preventDefault());
+
+    const setCollapsed = (collapsed) => {
+      root.hidden = collapsed;
+      reopenButton.hidden = !collapsed;
+    };
+    closeButton.addEventListener('click', () => setCollapsed(true));
+    reopenButton.addEventListener('click', () => setCollapsed(false));
+
+    root.append(closeButton);
+    container.append(reopenButton);
+  }
+
   const maxIndex = () => Math.max(0, birds.length - 2);
 
   function fillPage(page, bird) {
@@ -229,9 +261,10 @@ export function mountFieldGuide(container, { size = 'mini' } = {}) {
     destroy() {
       destroyed = true;
       root.remove();
+      reopenButton?.remove();
     }
-  };
-}
+  }
+};
 
 // ---------------------------------------------------------------------
 // Main-menu modal (#39)

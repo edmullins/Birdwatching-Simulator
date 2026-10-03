@@ -79,7 +79,7 @@ export function buildFoundDetail(tally) {
   return [...tally.values()].sort(
     (a, b) =>
       (RARITY_RANK[a.bird.rarity] ?? Number.MAX_SAFE_INTEGER) -
-        (RARITY_RANK[b.bird.rarity] ?? Number.MAX_SAFE_INTEGER) ||
+      (RARITY_RANK[b.bird.rarity] ?? Number.MAX_SAFE_INTEGER) ||
       String(a.bird.name).localeCompare(String(b.bird.name))
   );
 }
@@ -159,6 +159,15 @@ export async function mountLevel(container, params = {}) {
     }
   }
   activeCleanups.push(() => clearTimeout(feedbackTimerId));
+
+  // Fire-and-forget DELETE /api/runs/:runId for a run the player walked
+  // away from. Never awaited: leaving the level must not wait on the network.
+  function abandonRun({ keepalive = false } = {}) {
+    if (!runId) return;
+    api.abandonRun(runId, { keepalive }).catch((err) => {
+      console.error('Failed to abandon run:', err);
+    });
+  }
 
   async function finishRound(outcome) {
     if (finished) return; // set synchronously, before any await — see below
@@ -322,14 +331,26 @@ export async function mountLevel(container, params = {}) {
   window.addEventListener('keydown', refocusOnTyping);
   activeCleanups.push(() => window.removeEventListener('keydown', refocusOnTyping));
 
-  if (backButton) {
+    if (backButton) {
     backButton.addEventListener('click', () => {
-      // Leaving early does NOT call completeRun — the run is simply
-      // abandoned (stays 'in_progress' in the DB forever; there's no
-      // /abandon endpoint). Pre-existing behavior.
+      // Leaving early does NOT call completeRun — the run is deleted
+      // (DELETE /api/runs/:runId) so abandoned attempts don't pile up.
       if (finished) return;
+      finished = true; // a late catch/timer tick must not also finish the round
       teardownLevel();
+      abandonRun();
       showView('mainMenu', { user });
     });
   }
+
+  // Closing/reloading the tab mid-round also abandons the run. keepalive
+  // lets the DELETE finish after the page is gone. (The Run model's TTL
+  // index still sweeps anything this misses, e.g. a crash or lost network.)
+  function abandonOnPageHide() {
+    if (finished) return;
+    finished = true;
+    abandonRun({ keepalive: true });
+  }
+  window.addEventListener('pagehide', abandonOnPageHide);
+  activeCleanups.push(() => window.removeEventListener('pagehide', abandonOnPageHide));
 }
