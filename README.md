@@ -1,27 +1,151 @@
-# Birdwatching Simulator - Design Document
-
-Status: development
-Stack: Node.js, npm, MongoDB, RESTful API
-
----
-
-## 1. Overview
-### Link: https://birdwatching-simulator.onrender.com/
-
+# Birdwatching Simulator :bird:
 A single-player browser-based birdwatching game. Players view scenes built from
 layered real-life asset photos with bird images/animations composited on top.
 Holding **spacebar** zooms in through a binocular-shaped mask. Clicking a bird
-scores points based on rarity. Each level gives the player
-5 minutes to find a minimum number of birds; birds get smaller, more distant,
-more obscured, and more evasive as levels progress. Every 10 levels, the
-background location changes.
+scores points based on rarity. Each level gives the player 5 minutes to find a
+minimum number of birds; birds get smaller, more distant, more obscured, and 
+more evasive as levels progress. Every 10 levels, the background location changes.
 
-Players can also upload their own bird photos/frames.
+### authorship + version
+
+`@edmullins` \| `2026-09-10` \| `GOLF`
+
+### Deployments, Codebase, & Repo Features
+
+| requirement | evidence |
+|---|---|
+| MongoDB connection | [server code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/src/config/db.js#L7-L15) |
+| GET all | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L68) |
+| GET one | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L57) |
+| filtered GET | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L66) |
+| POST / create | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L54-L55) |
+| PATCH / update | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L59-L60) |
+| DELETE | [endpoint code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L63-L64) |
+| frontend `fetch()` | [client code](https://github.com/edmullins/Birdwatching-Simulator/blob/main/public/js/api.js#L15-L39) |
+| persistent CRUD | [PROD app](https://ethan.barrycumbie.com) |
+| HOTEL milestone | [milestone](https://github.com/edmullins/Birdwatching-Simulator/milestone/7) |
+| example issue | [issue #48](https://github.com/edmullins/Birdwatching-Simulator/issues/48) |
+| development branch | [branch](https://github.com/edmullins/Birdwatching-Simulator/tree/dev) |
+| feature → dev | [PR #49](https://github.com/edmullins/Birdwatching-Simulator/pull/49) |
+| dev → main | [PR #50](https://github.com/edmullins/Birdwatching-Simulator/pull/50) |
+| PROD deployment | [GitHub Action](https://github.com/edmullins/Birdwatching-Simulator/actions/runs/37092403047) |
+
+### narrative
+
+The project is a Node.js/Express backend with a MongoDB database, exposing a RESTful API, paired with a browser-based frontend for the layered-sprite gameplay. It's deployed in multiple places for redundancy/testing: a Render.com instance (https://birdwatching-simulator.onrender.com), a static GitHub Pages build, and a self-managed deployment on a GCP VM served under my teacher's domain at https://ethan.barrycumbie.com. The GCP VM setup means I'm handling my own server process management and networking. The repo also includes a GitHub Actions workflow for CI, so I can push changes and have them tested/deployed automatically.
+
+### architecture
+
+``` text
+LOCAL
+  │
+  ▼
+GitHub
+  │
+  ├── dev  ──► Render ─────────► DEV
+  │
+  └── main ──► GitHub Actions ─► GCP ──► PROD
+```
+
+### stack
+
+`HTML/CSS/JS` \| `Node.js` \| `Express` \| `Git/GitHub` \| `Render` \|
+`GCP` \| `Linux` \| `Nginx` \| `PM2` \| `Certbot` \| `GitHub Actions`
+
+### Project Structure
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/edmullins/birdwatching-simulator?utm_source=readme&utm_medium=badge)
+
+```text
+Birdwatching-Simulator/
+├── .github/
+│   └── workflows/
+│       └── main.yml
+├── docs/
+│   └── README.md
+├── public/
+│   ├── assets/
+│   │   ├── backgrounds/        (6 images: bg1–bg5, loginBG)
+│   │   ├── birds/              (30 bird sprites)
+│   │   │   └── og/             (30 original photos)
+│   │   ├── icons/
+│   │   │   └── search_icon.svg
+│   │   └── occlusion/          (bush1, tree, binocularsSilhouette)
+│   ├── css/
+│   │   ├── game.css
+│   │   ├── main.css
+│   │   └── menu.css
+│   ├── js/
+│   │   ├── components/
+│   │   │   ├── binocularMask.js
+│   │   │   ├── creditsModal.js
+│   │   │   ├── fieldGuide.js
+│   │   │   ├── leaderboard.js
+│   │   │   └── levelSelect.js
+│   │   ├── game/
+│   │   │   ├── birdSpawner.js
+│   │   │   ├── input.js
+│   │   │   ├── renderer.js
+│   │   │   └── stateMachine.js
+│   │   ├── utils/
+│   │   │   └── dom.js
+│   │   ├── views/
+│   │   │   ├── level.js
+│   │   │   ├── login.js
+│   │   │   ├── mainMenu.js
+│   │   │   └── roundSummary.js
+│   │   ├── api.js
+│   │   ├── main.js
+│   │   └── router.js
+│   └── index.html
+├── scripts/
+│   ├── seedBirds.js
+│   └── syncIndexes.js
+├── src/
+│   ├── config/
+│   │   ├── db.js
+│   │   └── session.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── birdController.js
+│   │   ├── leaderboardController.js
+│   │   └── runController.js
+│   ├── middleware/
+│   │   ├── requireAdmin.js
+│   │   └── requireAuth.js
+│   ├── models/
+│   │   ├── bird.js
+│   │   ├── run.js
+│   │   └── user.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── birdRoutes.js
+│   │   ├── leaderboardRoutes.js
+│   │   └── runRoutes.js
+│   ├── services/
+│   │   ├── antiCheat.js
+│   │   └── difficultyEngine.js
+│   └── app.js
+├── .env.example
+├── .gitignore
+├── package-lock.json
+├── package.json
+└── server.js
+```
+
+### GCP
+
+external IP: `34.95.9.15`\
+Linux user: `ethanmullins11`\
+instructor SSH public key installed: `yes`
+
+---
+
+### Post MVP
+
+* Players can also upload their own bird photos/frames.
 Uploads are private by default; players may submit them for admin review to
 become available to all players. Player-created birds (capped at "rare"
 rarity) can be raised as a tamagotchi-style pet in pre/post-game screens.
-
-Leaderboard ranks players by **max level reached**.
 
 ---
 
@@ -32,15 +156,15 @@ Leaderboard ranks players by **max level reached**.
 3. Birds fade into the scene over a 2–3 frame animation, at positions/sizes/
    z-depths determined by the level's difficulty parameters.
 4. Player scans the scene normally, or holds **space** to zoom in (binocular
-   mask overlay, higher effective zoom).
+   mask overlay, higher effective zoom, follows mouse).
 5. Clicking a bird within its hitbox scores points based on the bird's rarity.
-6. Some birds "flee" — a short flight animation, then reappear elsewhere in
-   the scene — adding a tracking difficulty layer.
+6. Some birds "flee" - a short flight animation, then reappear elsewhere in
+   the scene.
 7. Level is cleared when the player finds ≥ the level's minimum bird count
    before the timer expires. Failing to hit the minimum ends the run.
 8. Every 10 levels, the background (and its occlusion layers) changes.
 9. On run end, `levelReached` is submitted for leaderboard consideration
-   (server-validated — see §7).
+   (server-validated - see §7).
 
 ### Difficulty scaling per level
 - Minimum birds required (increases)
@@ -54,7 +178,7 @@ Leaderboard ranks players by **max level reached**.
 ## 3. Rendering Model
 
 - Each scene = **background layer** (static image) + one or more
-  **occlusion layers** (mid-ground assets, each with a fixed z-index) + one
+  **occlusion layers** (mid-ground assets, all absolutely positioned with a given z-index) + one
   or more **bird layers** (small absolutely-positioned sprites, each with
   its own z-index slot between occlusion layers).
 - Render order example: `background → occlusionLayer[0] → birds(z:1) →
@@ -63,9 +187,7 @@ Leaderboard ranks players by **max level reached**.
   the existing composited layer inside a clipped circular/binocular mask.
   Optionally pre-load slightly higher-res crops of birds currently in-scene
   for sharpness at max zoom.
-- Bird animation: 1–3 frame sprite cycle via CSS/JS interval — chosen over
-  video specifically because it's simple to validate/support for
-  user-uploaded content.
+- Bird animation: 1–3 frame sprite cycle via CSS/JS interval.
 - Bird state machine: `spawning (fade-in) → visible → [fleeing → hidden →
   reappear] → visible → clicked/despawned`.
 - Hitboxes: slightly larger than the visual sprite bounds, especially
@@ -78,7 +200,7 @@ Leaderboard ranks players by **max level reached**.
 Rarity tiers: **Basic, Rare, Epic, Legendary**
 
 - Higher rarity = more points, and lower spawn probability.
-- **User-uploaded birds are capped at Rare** — they cannot be Epic or
+- **User-uploaded birds are capped at Rare** - they cannot be Epic or
   Legendary. This preserves the value of curated/official high-rarity birds.
 
 ---
@@ -86,7 +208,7 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
 ## 5. User-Generated Content
 
 ### Uploads
-- Players can upload bird photos + 1–3 animation frames.
+- Players can upload bird photos as 1–3 animation frames.
 - On upload, player sets a **scale range** (min/max) within global bounds
   defined by the game — this controls how large/small the bird can render
   in-game.
@@ -96,15 +218,15 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
   developer adjustment.
 
 ### Visibility states
-- `private` — default. Only visible to the uploading player, in their own
+- `private` - default. Only visible to the uploading player, in their own
   games.
-- `submitted` — player has requested review for public inclusion.
-- `approved` — admin-approved; now spawnable for all players.
-- `rejected` — admin-rejected; remains visible only to the owner, flagged
+- `submitted` - player has requested review for public inclusion.
+- `approved` - admin-approved; now spawnable for all players.
+- `rejected` - admin-rejected; remains visible only to the owner, flagged
   as rejected.
 
 ### Admin review
-- No separate admin login system — admin page/routes are gated behind the
+- No separate admin login system - admin page/routes are gated behind the
   normal auth session plus an `isAdmin` flag on the user document.
 - Admin page lists the review queue (`submitted` assets), lets the admin
   approve/reject bird and background submissions.
@@ -113,8 +235,8 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
 
 ## 6. Tamagotchi / Pet Care System
 
-- Any bird a player has **created** (`isUserCreature: true`) — which by
-  rarity rules means Basic or Rare only — can be cared for as a pet.
+- Any bird a player has **created** (`isUserCreature: true`) - which by
+  rarity rules means Basic or Rare only - can be cared for as a pet.
 - Available in pre-game and post-game screens (not during the timed run).
 - Mechanics: feed (raises hunger stat), play (a simple flappy-bird-style
   minigame that raises happiness).
@@ -141,9 +263,12 @@ Rarity tiers: **Basic, Rare, Epic, Legendary**
 
 ```js
 users: {
-  _id, username, email, passwordHash,
+  _id,username, email, passwordHash,
   isAdmin: Boolean,
-  stats: { maxLevelReached: Number, bestScore: Number, totalBirdsFound: Number }
+  stats: {
+   maxLevelReached: Number,
+   highScore: Number
+  }
 }
 
 birds: {
@@ -185,3 +310,12 @@ admin_review_queue: {
       manual admin review, vs. manual-only at launch).
 - [ ] REST endpoint spec (planned as a follow-up doc).
 - [ ] Express/Mongoose schema implementation (planned as a follow-up).
+
+---
+
+## 10. Tech Stack
+
+- **Runtime:** Node.js
+- **Package management:** npm
+- **Database:** MongoDB
+- **API architecture:** RESTful
