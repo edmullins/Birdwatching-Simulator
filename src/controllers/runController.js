@@ -1,7 +1,8 @@
 // src/controllers/runController.js 
 // ---------------------------------------------------------------------
-// Creates runs (validates unlocks/available birds) and completes runs 
-// (validates via anti-cheat, updates run/user stats, flags suspicious runs).
+// Creates runs (validates unlocks/available birds), reads one run, completes
+// runs (validates via anti-cheat, updates run/user stats, flags suspicious
+// runs), and deletes abandoned in-progress runs.
 // ---------------------------------------------------------------------
 import Run from '../models/run.js';
 import User from '../models/user.js';
@@ -65,9 +66,34 @@ export async function createRun(req, res) {
 }
 
 // Complete an in-progress run: attach birdsFound and timestamps, mark ended
+// Get one run (owner only)
+export async function getRun(req, res) {
+  try {
+    const { runId } = req.params;
+    if (!mongoose.isValidObjectId(runId)) {
+      return res.status(400).json({ message: 'Invalid run id' });
+    }
+
+    const run = await Run.findOne({ _id: runId, userId: req.session.userId });
+    if (!run) {
+      return res.status(404).json({ message: 'Run not found' });
+    }
+
+    res.json({ run });
+  } catch (error) {
+    console.error('getRun error:', error);
+    res.status(500).json({ message: 'Failed to load run' });
+  }
+}
+
+// Complete an in-progress run (PATCH /api/runs/:runId): attach birdsFound
+// and timestamps, mark ended
 export async function completeRun(req, res) {
   try {
     const { runId } = req.params;
+    if (!mongoose.isValidObjectId(runId)) {
+      return res.status(400).json({ message: 'Invalid run id' });
+    }
     const {
       outcome = 'timeout',
       birdsFound = [],
@@ -154,5 +180,35 @@ export async function completeRun(req, res) {
   } catch (error) {
     console.error('completeRun error:', error);
     res.status(500).json({ message: 'Failed to complete run' });
+  }
+}
+// Delete an abandoned run (DELETE /api/runs/:runId). Only 'in_progress'
+// runs can be deleted: completed/flagged runs are the anti-cheat audit
+// trail (design doc §7: flagged runs are kept for review, not lost).
+// The client calls this when the player leaves a level early.
+export async function deleteRun(req, res) {
+  try {
+    const { runId } = req.params;
+    if (!mongoose.isValidObjectId(runId)) {
+      return res.status(400).json({ message: 'Invalid run id' });
+    }
+
+    // Single atomic query: owner + in_progress must both match.
+    const deleted = await Run.findOneAndDelete({
+      _id: runId,
+      userId: req.session.userId,
+      status: 'in_progress'
+    });
+    if (deleted) return res.status(204).end();
+
+    // Nothing deleted: tell "not yours / doesn't exist" from "already finished".
+    const exists = await Run.exists({ _id: runId, userId: req.session.userId });
+    if (exists) {
+      return res.status(409).json({ message: 'Only in-progress runs can be deleted' });
+    }
+    return res.status(404).json({ message: 'Run not found' });
+  } catch (error) {
+    console.error('deleteRun error:', error);
+    res.status(500).json({ message: 'Failed to delete run' });
   }
 }

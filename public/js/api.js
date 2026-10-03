@@ -12,13 +12,14 @@ const BASE = '/api';
  * validation `details` array, so callers can display something useful
  * without re-parsing responses themselves.
  */
-async function request(path, { method = 'GET', body } = {}) {
+async function request(path, { method = 'GET', body, keepalive = false } = {}) {
   // inside request()
   const res = await fetch(BASE + path, {
     method,
     headers: { 'Content-Type': 'application/json' },
     body: body !== undefined ? JSON.stringify(body) : undefined,
-    credentials: 'include'   // <--- ensure cookies are sent for session auth
+    credentials: 'include',   // <--- ensure cookies are sent for session auth
+    keepalive                 // lets a request finish while the tab is closing
   });
 
   let data = null;
@@ -29,7 +30,8 @@ async function request(path, { method = 'GET', body } = {}) {
   }
 
   if (!res.ok) {
-    const error = new Error((data && data.error) || `Request failed (${res.status})`);
+    // Auth middleware replies { error }, controllers reply { message }: accept both.
+    const error = new Error((data && (data.error || data.message)) || `Request failed (${res.status})`);
     error.status = res.status;
     error.details = data && data.details;
     throw error;
@@ -52,8 +54,14 @@ export const api = {
   createRun: (levelNumber) =>
     request('/runs', { method: 'POST', body: { levelNumber } }),
 
+    getRun: (runId) => request(`/runs/${runId}`),
+
   completeRun: (runId, payload = {}) =>
-    request(`/runs/${runId}/complete`, { method: 'POST', body: payload }),
+    request(`/runs/${runId}`, { method: 'PATCH', body: payload }),
+
+  // Player left a level early. Pass { keepalive: true } from pagehide.
+  abandonRun: (runId, { keepalive = false } = {}) =>
+    request(`/runs/${runId}`, { method: 'DELETE', keepalive }),
 
   getLeaderboard: (limit) => request(`/leaderboard${limit ? `?limit=${limit}` : ''}`),
 
