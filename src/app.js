@@ -13,6 +13,7 @@ import authRoutes from './routes/authRoutes.js';
 import runRoutes from './routes/runRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
 import birdRoutes from './routes/birdRoutes.js';
+import petRoutes from './routes/petRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/runs', runRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/birds', birdRoutes);
+app.use('/api/pet', petRoutes);
 
 // SPA fallback — anything not matched by the above serves index.html,
 // so client-side router.js can handle the view state

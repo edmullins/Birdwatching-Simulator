@@ -13,7 +13,7 @@ import Bird from '../models/bird.js';
 // `.select()` is an explicit whitelist  a field that isn't listed here is
 // silently dropped from the response, so add new Bird fields in BOTH this
 // string and toBirdPayload() below.
-const BIRD_FIELDS = [
+export const BIRD_FIELDS = [
   '_id',
   'name',
   'scientificName',
@@ -32,7 +32,15 @@ const BIRD_FIELDS = [
   'rarity'
 ].join(' ');
 
-function toBirdPayload(bird) {
+// /assets/birds/american-crow.png -> /assets/birds/thumbs/american-crow.webp
+// Small (<=256px) WebP made by scripts/makeBirdThumbs.js. Derived by naming
+// convention, so no schema field or reseed is needed. The full-size sprites
+// are up to 7 MB each - the pet picker and the flying pet use thumbnails.
+export function thumbUrlFor(imageUrl) {
+  return imageUrl ? imageUrl.replace(/\/([^/]+)\.[a-z0-9]+$/i, '/thumbs/$1.webp') : undefined;
+}
+
+export function toBirdPayload(bird) {
   return {
     id: bird._id.toString(),
     name: bird.name,
@@ -45,6 +53,7 @@ function toBirdPayload(bird) {
     song: bird.song,
     funFact: bird.funFact,
     imageUrl: bird.imageUrl,
+    thumbUrl: thumbUrlFor(bird.imageUrl),
     ogImageUrl: bird.ogImageUrl,
     creditId: bird.creditId,
     imageAuthor: bird.imageAuthor,
