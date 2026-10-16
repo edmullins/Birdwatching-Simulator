@@ -630,16 +630,14 @@ async function preflight() {
 
 async function seedBirds() {
   await preflight();
-
   await mongoose.connect(process.env.MONGODB_URI);
-
-  // One-time cleanup: older docs were seeded with `speciesName`, which the
-  // schema has since renamed to `scientificName`. Mongoose strict mode would
-  // strip an $unset for a path it no longer knows, so go through the raw
-  // collection.
   await Bird.collection.updateMany(
     { ownerId: null, speciesName: { $exists: true } },
     { $unset: { speciesName: '' } }
+  );
+  await Bird.collection.updateMany(
+    { $or: [{ care: { $exists: true } }, { isUserCreature: { $exists: true } }] },
+    { $unset: { care: '', isUserCreature: '' } }
   );
 
   for (const bird of birds) {
@@ -667,17 +665,8 @@ async function seedBirds() {
           ogImageUrl,
           rarity: bird.rarity,
           visibility: 'approved',
-          isUserCreature: false,
           license
         },
-        $setOnInsert: {
-          care: {
-            hunger: 100,
-            happiness: 100,
-            lastFedAt: new Date(),
-            lastPlayedAt: new Date()
-          }
-        }
       },
       {
         upsert: true,

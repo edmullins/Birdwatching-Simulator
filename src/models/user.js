@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { PET_INITIAL_STAT, PET_MAX_STAT } from '../config/pet.js';
 
 const SALT_ROUNDS = 10;
 
@@ -25,6 +26,15 @@ const userSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    // Companion bird shown on the main menu. One at a time; birdId === null
+    // means "no pet - show the picker". hunger/happiness are *stored* values
+    // as of lastDecayAt; current values are derived on read (services/petCare.js).
+    pet: {
+      birdId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bird', default: null },
+      hunger: { type: Number, default: PET_INITIAL_STAT, min: 0, max: PET_MAX_STAT },
+      happiness: { type: Number, default: PET_INITIAL_STAT, min: 0, max: PET_MAX_STAT },
+      lastDecayAt: { type: Date, default: null },
     },
     stats: {
       maxLevelReached: {
@@ -74,12 +84,12 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     id: this._id,
     username: this.username,
     isAdmin: this.isAdmin,
-    stats: { 
+    stats: {
       maxLevelReached: this.stats.maxLevelReached,
       totalRuns: this.stats.totalRuns,
       bestScore: this.stats.bestScore,
       totalBirdsFound: this.stats.totalBirdsFound,
-     },
+    },
   };
 };
 

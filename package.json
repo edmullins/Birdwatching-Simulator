@@ -8,7 +8,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed:birds": "node scripts/seedBirds.js",
-    "sync:indexes": "node scripts/syncIndexes.js"
+    "sync:indexes": "node scripts/syncIndexes.js",
+    "thumbs:birds": "node scripts/makeBirdThumbs.js"
   },
   "repository": {
     "type": "git",
@@ -31,5 +32,8 @@
     "express-session": "^1.19.0",
     "mongoose": "^9.9.4",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5"
   }
 }
