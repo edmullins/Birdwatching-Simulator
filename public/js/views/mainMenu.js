@@ -12,6 +12,7 @@ import { mountLevelSelect } from '../components/levelSelect.js';
 import { mountLeaderboard } from '../components/leaderboard.js';
 import { openFieldGuideModal } from '../components/fieldGuide.js';
 import { openCreditsModal } from '../components/creditsModal.js';
+import { mountPetCompanion } from '../components/petCompanion.js';
 
 export function mountMainMenu(container, params) {
   const user = params?.user;
@@ -30,6 +31,9 @@ export function mountMainMenu(container, params) {
       <div class="menu-topbar-actions">
         <button type="button" class="btn btn-ghost" data-action="field-guide">
           Field Guide
+        </button>
+        <button type="button" class="btn btn-ghost" data-action="pet">
+          Pet
         </button>
         <button type="button" class="btn btn-ghost" data-action="credits">
           Credits
@@ -132,7 +136,16 @@ export function mountMainMenu(container, params) {
       }
     });
   }
+  // Companion bird: mounts the flying pet (if the player has one) and wires
+  // the Pet button to the picker. The component removes itself when this
+  // view is hidden, same as the modals above.
+  const companion = mountPetCompanion(container);
+  const petButton = container.querySelector('[data-action="pet"]');
+  if (petButton) {
+    petButton.addEventListener('click', () => companion.openPicker());
+  }
 }
+
 
 function escapeHtml(str) {
   const div = document.createElement('div');

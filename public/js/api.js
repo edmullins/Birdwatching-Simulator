@@ -2,7 +2,7 @@
 // ---------------------------------------------------------------------
 // Lightweight fetch wrapper and api client: sends credentials, parses
 // JSON, throws Errors with server error/details on non-2xx responses,
-// and exposes auth, run, leaderboard, and birds endpoints.
+// and exposes auth, run, leaderboard, birds, and pet endpoints.
 // ---------------------------------------------------------------------
 const BASE = '/api';
 
@@ -68,5 +68,10 @@ export const api = {
   getBirds: () => request('/birds'),
 
   // Field Guide catalog: strictly approved birds, same for every player.
-  getFieldGuideBirds: () => request('/birds?visibility=approved')
+  getFieldGuideBirds: () => request('/birds?visibility=approved'),
+
+  // Companion bird (main-menu pet). The server owns decay + stat math.
+  getPet: () => request('/pet'),
+  choosePet: (birdId) => request('/pet', { method: 'PUT', body: { birdId } }),
+  petAction: (action) => request(`/pet/${action}`, { method: 'POST' }) // 'feed' | 'pet'
 };
