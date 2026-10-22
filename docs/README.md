@@ -39,5 +39,8 @@ GitHub
 ```
 
 ### Project Structure
-[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/edmullins/birdwatching-simulator?utm_source=readme&utm_medium=badge)
-<img width="4025" height="7948" alt="diagram" src="https://github.com/user-attachments/assets/b16c7a25-2f50-4a3a-908c-dc583570514d" />
+<img width="8906" height="10117" alt="diagram (1)" src="https://github.com/user-attachments/assets/0207625c-19bc-4019-a355-209ff4fd5994" />
+
+---
+
+[![Architecture diagram of edmullins/birdwatching-simulator](https://gitdiagram.com/edmullins/birdwatching-simulator/diagram.png)](https://gitdiagram.com/edmullins/birdwatching-simulator?utm_source=readme&utm_medium=picture)
