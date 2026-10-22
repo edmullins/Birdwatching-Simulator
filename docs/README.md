@@ -2,7 +2,7 @@
 
 > A single-player browser-based birdwatching game.
 
-[🚀 Live App](https://ethan.barrycumbie.com/) | [🎤 Demo](https://birdwatching-simulator.onrender.com/) | [📚 Project Docs] | [🐛 Report a Bug]
+[🚀 Live App](https://ethan.barrycumbie.com/) | [🎤 Demo](https://birdwatching-simulator.onrender.com/) | [📚 Project Docs](https://github.com/edmullins/Birdwatching-Simulator/tree/dev/docs) | [🐛 Report a Bug]
 
 ## What is it?
 
@@ -23,7 +23,7 @@ Short user/dev instructions.
 
 ## Project
 
-[INDIA] | [JULIETT] | [KILO] | [Capabilities] | [Individual Reports]
+[INDIA](https://github.com/edmullins/Birdwatching-Simulator/blob/dev/docs/india.md) | [JULIETT] | [KILO] | [Capabilities] | [Individual Reports]
 
 ### architecture
 
