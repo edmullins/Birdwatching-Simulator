@@ -59,19 +59,6 @@ const imageMetaSchema = new mongoose.Schema(
   { _id: false }
 );
 
-// §6: pet care stats. Decay is computed on read elsewhere (not here, and
-// not via a background job per the design doc) — this subdocument just
-// holds the last-known values and timestamps that decay is computed from.
-const careSchema = new mongoose.Schema(
-  {
-    hunger: { type: Number, default: 100, min: 0, max: 100 },
-    happiness: { type: Number, default: 100, min: 0, max: 100 },
-    lastFedAt: { type: Date, default: Date.now },
-    lastPlayedAt: { type: Date, default: Date.now },
-  },
-  { _id: false }
-);
-
 const licenseSchema = new mongoose.Schema(
   {
     source: { type: String, required: true, maxlength: 60},          // e.g. "USFWS National Digital Library"
@@ -231,28 +218,9 @@ const birdSchema = new mongoose.Schema(
       type: licenseSchema,
       required: true,
     },
-
-    // True if this bird is eligible for tamagotchi-style pet care (§6).
-    // Enforced below: only basic/rare birds can be creatures, matching
-    // "user-uploaded birds are capped at Rare" (§4) + "isUserCreature
-    // ... by rarity rules means Basic or Rare only" (§6).
-    isUserCreature: {
-      type: Boolean,
-      default: false,
-    },
-
-    care: {
-      type: careSchema,
-      default: () => ({}),
-    },
   },
   { timestamps: true }
 );
-
-birdSchema.path('isUserCreature').validate(function validateCreatureRarity(isUserCreature) {
-  if (!isUserCreature) return true;
-  return this.rarity === 'basic' || this.rarity === 'rare';
-}, 'isUserCreature birds must be basic or rare rarity');
 
 // Belt-and-suspenders for the same rule as ownerId-uploaded birds are
 // created: an owned bird can't be above the user-upload rarity cap.
