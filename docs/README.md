@@ -23,7 +23,7 @@ Short user/dev instructions.
 
 ## Project
 
-[INDIA](https://github.com/edmullins/Birdwatching-Simulator/blob/dev/docs/india.md) | [JULIETT] | [KILO] | [Capabilities] | [Individual Reports]
+[INDIA](https://github.com/edmullins/Birdwatching-Simulator/blob/dev/docs/india.md) | [JULIETT](https://github.com/edmullins/Birdwatching-Simulator/blob/dev/docs/juliett.md) | [KILO] | [Capabilities] | [Individual Reports]
 
 ### architecture
 
