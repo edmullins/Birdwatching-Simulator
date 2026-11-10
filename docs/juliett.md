@@ -20,6 +20,7 @@ A lot of people can't tell common local birds apart, and the tools that exist fo
  
 ### 2. Experience the product: audience participation
  
+**Gameplay:** https://youtu.be/EToJQ0KjB7E  
 **Steps:**
 1. Navigate to https://ethan.barrycumbie.com/ or find the link through my github: **edmullins**
 2. Create an account / Enter a username and password (must be 8 characters long)
