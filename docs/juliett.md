@@ -16,7 +16,7 @@ A browser birdwatching game where you scan a real photo for tiny, camouflaged bi
  
 A lot of people can't tell common local birds apart, and the tools that exist for learning are either reference-style (guides, ID apps) or social/logging tools. They assume you are already outdoors and motivated. There's a gap for an in-browser, low-stakes practice game that builds the visual search and recognition skill (finding a small, partly hidden bird, then knowing what it is) that real birding depends on.
 
-![bird in tree](hidingBird.png)
+![bird in tree](imgs/hidingBird.png)
  
 ### 2. Experience the product: audience participation
  
